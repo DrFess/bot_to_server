@@ -3,14 +3,14 @@ import logging
 
 from aiogram import Bot, Dispatcher, Router, F
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.filters import Command
 from aiogram.types import Message
-from aiohttp import ProxyConnector
-
 from settings import TOKEN, PROXY_URL
 
-connector = ProxyConnector.from_url(PROXY_URL)
-bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), connector=connector)
+
+session = AiohttpSession(proxy=PROXY_URL)
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=session)
 router = Router()
 
 
