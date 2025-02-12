@@ -3,14 +3,12 @@ import logging
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.client.default import DefaultBotProperties
-from aiohttp_socks import ProxyConnector
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.filters import Command
 from aiogram.types import Message
 from settings import TOKEN, PROXY_URL
 
 
-connector = ProxyConnector.from_url(PROXY_URL)
-bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), connector=connector)
 router = Router()
 
 
@@ -29,6 +27,8 @@ async def main():
     dp.include_routers(
         router,
     )
+    session = AiohttpSession(proxy=PROXY_URL)
+    bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=session)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
