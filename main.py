@@ -5,10 +5,12 @@ from aiogram import Bot, Dispatcher, Router, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.filters import Command
 from aiogram.types import Message
+from aiohttp import ProxyConnector
 
-from settings import TOKEN
+from settings import TOKEN, PROXY_URL
 
-bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
+connector = ProxyConnector.from_url(PROXY_URL)
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), connector=connector)
 router = Router()
 
 
