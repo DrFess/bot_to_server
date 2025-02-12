@@ -2,12 +2,13 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher, Router, F
+from aiogram.client.default import DefaultBotProperties
 from aiogram.filters import Command
 from aiogram.types import Message
 
 from settings import TOKEN
 
-bot = Bot(token=TOKEN, parse_mode='HTML')
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
 router = Router()
 
 
