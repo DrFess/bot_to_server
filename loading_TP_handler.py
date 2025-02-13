@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message
+from aiogram.types import Message, File
 
 router = Router()
 
@@ -20,6 +20,5 @@ async def info_loading_handler(message: Message, state: FSMContext):
 
 @router.message(LoadingHandler.step_1)
 async def get_file(message: Message, state: FSMContext):
-    file = message.document.file_id
-    await message.answer(file)
+    await message.bot.download(file=message.document.file_id, destination=f'table/{message.document.file_name}')
     await state.clear()

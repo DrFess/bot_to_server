@@ -14,8 +14,3 @@ async def command_start_handler(message: Message):
         'Привет, я - бот и живу в больнице. Чем могу помочь смотри в Меню',
         reply_markup=builder.as_markup(resize_keyboard=True)
     )
-
-
-@router.message()
-async def echo_message(message: Message):
-    await message.answer(message.text)
