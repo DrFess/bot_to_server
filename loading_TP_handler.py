@@ -20,5 +20,6 @@ async def info_loading_handler(message: Message, state: FSMContext):
 
 @router.message(LoadingHandler.step_1)
 async def get_file(message: Message, state: FSMContext):
-    await message.answer(f'{message}')
+    file = message.document.file_id
+    await message.answer(file)
     await state.clear()
