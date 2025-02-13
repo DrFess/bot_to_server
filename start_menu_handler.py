@@ -7,7 +7,7 @@ router = Router()
 
 @router.message(Command(commands=['start']))
 async def command_start_handler(message: Message):
-    await message.answer('Привет, я - бот для детского травмпункта.')
+    await message.answer('Привет, я - бот и живу в больнице. Чем могу помочь смотри в Меню')
 
 
 @router.message()
