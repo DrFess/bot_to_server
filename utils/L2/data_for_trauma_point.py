@@ -1,7 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 
-from parse_l2 import get_history_content
+from utils.L2.parse_l2 import get_history_content
 
 
 def get_data_for_traum_point(connect, number_in_table: int):
