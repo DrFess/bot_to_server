@@ -1,31 +1,20 @@
 import asyncio
 import logging
 
-from aiogram import Bot, Dispatcher, Router
+from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.client.session.aiohttp import AiohttpSession
-from aiogram.filters import Command
-from aiogram.types import Message
+
+import start_menu_handler
+from middleware import AllowedUserMiddleware
 from settings import TOKEN, PROXY_URL
-
-
-router = Router()
-
-
-@router.message(Command(commands=['start']))
-async def command_start_handler(message: Message):
-    await message.answer('Привет, я - бот для детского травмпункта.')
-
-
-@router.message()
-async def echo_message(message: Message):
-    await message.answer(message.text)
 
 
 async def main():
     dp = Dispatcher()
+    dp.message.middleware(AllowedUserMiddleware())
     dp.include_routers(
-        router,
+        start_menu_handler.router,
     )
     session = AiohttpSession(proxy=PROXY_URL)
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=session)
