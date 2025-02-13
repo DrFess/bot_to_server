@@ -8,7 +8,7 @@ from settings import (login_l2, password_l2, proxies, LPU_SECTION_ID_TP, VIZIT_T
                       VIZIT_TYPE_ID_LOR, LPU_SECTION_PROFILE_ID_TP, LPU_SECTION_PROFILE_ID_LOR,
                       USLUGA_COMPLEX_ID_TP_SECOND,
                       USLUGA_COMPLEX_ID_TP_FIRST, USLUGA_COMPLEX_ID_LOR, RESULTCLASS_ID_TP, VIZIT_TYPE_ID_DISEASE,
-                      path_to_table)
+                      path_to_table, path_to_doctorsJson)
 from utils.ECP.single_digital_platform import entry, mkb
 from utils.L2.data_for_trauma_point import get_ready_data, create_text
 from utils.L2.diaries import authorization_l2
@@ -39,7 +39,7 @@ def upload_statistic_card_from_ECP():
                     data_for_ecp = get_ready_data(session, ambulance_card_number, duty_date)
                     session.close()
 
-                    with open('/Users/aleksejdegtarev/PycharmProjects/integration_with_single_digital_platform/jsonS/doctors.json', 'r') as file:
+                    with open(path_to_doctorsJson, 'r') as file:
                         doctors = json.load(file)
 
                     doctor_surname = data_for_ecp.get('Врач').split(' ')[0]
