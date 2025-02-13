@@ -5,3 +5,4 @@ gspread==6.1.4
 beautifulsoup4==4.13.3
 holidays==0.66
 aioschedule==0.5.2
+fake-useragent==2.0.3
