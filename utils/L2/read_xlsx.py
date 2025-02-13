@@ -3,8 +3,8 @@ import json
 import requests
 from openpyxl import load_workbook
 
-from parse_l2 import authorization_l2
 from settings import login_l2, password_l2
+from utils.L2.diaries import authorization_l2
 
 
 def read_xlsx(path: str) -> list:
