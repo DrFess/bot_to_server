@@ -4,7 +4,6 @@ import json
 import requests
 
 
-from parse_l2 import authorization_l2
 from read_xlsx import read_xlsx, find_index
 from settings import (login_l2, password_l2, proxies, LPU_SECTION_ID_TP, VIZIT_TYPE_ID_TP, LPU_SECTION_ID_LOR, \
                       VIZIT_TYPE_ID_LOR, LPU_SECTION_PROFILE_ID_TP, LPU_SECTION_PROFILE_ID_LOR,
@@ -13,6 +12,7 @@ from settings import (login_l2, password_l2, proxies, LPU_SECTION_ID_TP, VIZIT_T
                       path_to_table)
 from utils.ECP.single_digital_platform import entry, mkb
 from utils.L2.data_for_trauma_point import get_ready_data, create_text
+from utils.L2.diaries import authorization_l2
 from utils.L2.trauma_point import search_patients_ext6, date_in_milliseconds, get_evn_pl_number, save_first_data_vizit, \
     save_visit, add_initial_examination_service, create_template, save_text_protocol, finished, get_operation_id, \
     add_operation_service
