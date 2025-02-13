@@ -9,22 +9,22 @@ from read_xlsx import read_xlsx, find_index
 from settings import (login_l2, password_l2, proxies, LPU_SECTION_ID_TP, VIZIT_TYPE_ID_TP, LPU_SECTION_ID_LOR, \
                       VIZIT_TYPE_ID_LOR, LPU_SECTION_PROFILE_ID_TP, LPU_SECTION_PROFILE_ID_LOR,
                       USLUGA_COMPLEX_ID_TP_SECOND,
-                      USLUGA_COMPLEX_ID_TP_FIRST, USLUGA_COMPLEX_ID_LOR, RESULTCLASS_ID_TP, VIZIT_TYPE_ID_DISEASE)
+                      USLUGA_COMPLEX_ID_TP_FIRST, USLUGA_COMPLEX_ID_LOR, RESULTCLASS_ID_TP, VIZIT_TYPE_ID_DISEASE,
+                      path_to_table)
 from utils.ECP.single_digital_platform import entry, mkb
 from utils.L2.data_for_trauma_point import get_ready_data, create_text
 from utils.L2.trauma_point import search_patients_ext6, date_in_milliseconds, get_evn_pl_number, save_first_data_vizit, \
     save_visit, add_initial_examination_service, create_template, save_text_protocol, finished, get_operation_id, \
     add_operation_service
 
-path = '/Users/aleksejdegtarev/PycharmProjects/integration_with_single_digital_platform/daily_report/tables'
 
-duty_files = os.listdir(path)
+duty_files = os.listdir(path_to_table)
 if len(duty_files) > 1:
     print('Много отчетов уже загружено. Удали лишние')
 else:
     file = duty_files[0]
     duty_date = file.split(' ')[0]  # Дата отчета
-    table_data = read_xlsx(f'{path}/{file}')
+    table_data = read_xlsx(f'{path_to_table}/{file}')
     column = find_index(table_data)
 
     for item in table_data:
