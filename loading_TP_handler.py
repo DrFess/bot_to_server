@@ -1,4 +1,5 @@
-from aiogram import Router, F
+from aiogram import Router
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
@@ -14,7 +15,7 @@ class LoadingHandler(StatesGroup):
     step_2 = State()
 
 
-@router.message(F.text == 'Отправить отчет по травмпункту')
+@router.message(Command(commands=['start', 'menu']))
 async def info_loading_handler(message: Message, state: FSMContext):
     await state.set_state(LoadingHandler.step_1)
     await message.answer('отправь мне файл с расширением .xslx\n '
