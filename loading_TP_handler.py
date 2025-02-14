@@ -15,7 +15,7 @@ class LoadingHandler(StatesGroup):
     step_2 = State()
 
 
-@router.message(Command(commands=['start', 'menu']))
+@router.message(Command(commands=['upload']))
 async def info_loading_handler(message: Message, state: FSMContext):
     await state.set_state(LoadingHandler.step_1)
     await message.answer('отправь мне файл с расширением .xslx\n '
