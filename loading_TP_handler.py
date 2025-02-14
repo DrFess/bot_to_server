@@ -35,7 +35,12 @@ async def get_file(message: Message, state: FSMContext):
 
 @router.callback_query(LoadingHandler.step_2)
 async def loading_patients(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer('Начал выгружать в ЕЦП')
-    upload_statistic_card_from_ECP()
-    await callback.message.answer('Закончил выгружать в ЕЦП')
+    if callback.data == '1':
+        await callback.message.answer('Начал выгружать в ЕЦП')
+        upload_statistic_card_from_ECP()
+        await callback.message.answer('Закончил выгружать в ЕЦП')
+    elif callback.data == '0':
+        await callback.message.answer('Отчет удален. Для запуска процедуры выгрузки статталона используй команду из меню')
+    else:
+        await callback.message.answer('Что-то пошло не так')
     await state.clear()
