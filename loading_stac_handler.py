@@ -23,7 +23,7 @@ async def info_loading_stac_handler(message: Message, state: FSMContext):
     await message.answer('Истории готовы для выгрузки?', reply_markup=builder.as_markup())
 
 
-@router.message(LoadingStacHandler.step_1)
+@router.callback_query(LoadingStacHandler.step_1)
 async def upload_stac_handler(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'stac_1':
         export_stories_function()
