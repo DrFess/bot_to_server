@@ -15,7 +15,7 @@ from utils.L2.diaries import create_diaries_function
 
 
 async def scheduler():
-    aioschedule.every().day.at('13:00').do(create_diaries_function)
+    aioschedule.every().day.at('13:08').do(create_diaries_function)
 
     while True:
         await aioschedule.run_pending()
