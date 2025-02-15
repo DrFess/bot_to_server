@@ -352,15 +352,15 @@ def upload_statistic_card_from_ECP():
                             diag_w='13947',  # пока так оставить, но нужен справочник id обстоятельств травм по МКБ
                             result_class_id=RESULTCLASS_ID_TP
                         )
-                    with open('emergency_room_report.txt', 'a', encoding='utf-8') as file:
-                        file.write(f'{datetime.datetime.now()} {file}\n')
+                    with open('emergency_room_report.txt', 'a', encoding='utf-8') as text_file:
+                        text_file.write(f'{datetime.datetime.now()} {file}\n')
                 else:
-                    with open('emergency_room_errors.txt', 'a', encoding='utf-8') as file:
-                        file.write(f'{datetime.datetime.now()} {file}: {doctor_surname} нет в doctors.json\n')
+                    with open('emergency_room_errors.txt', 'a', encoding='utf-8') as text_file:
+                        text_file.write(f'{datetime.datetime.now()} {file}: {doctor_surname} нет в doctors.json\n')
                 session.close()
         except Exception as error:
-            with open('emergency_room_errors.txt', 'a', encoding='utf-8') as file:
-                file.write(f'{datetime.datetime.now()} {file}: {error}\n')
+            with open('emergency_room_errors.txt', 'a', encoding='utf-8') as text_file:
+                text_file.write(f'{datetime.datetime.now()} {file}: {error}\n')
     return file
 
 
