@@ -37,8 +37,8 @@ def upload_statistic_card_from_ECP():
                 data_for_ecp = get_ready_data(session, ambulance_card_number, duty_date)
                 session.close()
 
-                with open(path_to_doctorsJson, 'r') as file:
-                    doctors = json.load(file)
+                with open(path_to_doctorsJson, 'r') as doc_file:
+                    doctors = json.load(doc_file)
 
                 doctor_surname = data_for_ecp.get('Врач').split(' ')[0]
 
@@ -357,11 +357,13 @@ def upload_statistic_card_from_ECP():
                     with open('emergency_room_errors.txt', 'a', encoding='utf-8') as text_file:
                         text_file.write(f'{datetime.datetime.now()} {duty_date}: {doctor_surname} нет в doctors.json\n')
                 session.close()
-            with open('emergency_room_report.txt', 'a', encoding='utf-8') as text_file:
-                text_file.write(f'{datetime.datetime.now()} {duty_date}\n')
+
         except Exception as error:
             with open('emergency_room_errors.txt', 'a', encoding='utf-8') as text_file:
                 text_file.write(f'{datetime.datetime.now()} {duty_date}: {error}\n')
+
+    with open('emergency_room_report.txt', 'a', encoding='utf-8') as text_file:
+        text_file.write(f'{datetime.datetime.now()} {file}\n')
     return duty_date
 
 
