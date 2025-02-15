@@ -3135,4 +3135,3 @@ def create_diaries_function():
         except Exception as e:
             print(f'Error: {e}')
     session.close()
-    return 'Дневники созданы'
