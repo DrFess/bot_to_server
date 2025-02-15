@@ -370,4 +370,12 @@ def upload_statistic_card_from_ECP():
 def delete_statistic_card(path: str, file_name: str):
     destination = os.path.join(path, file_name)
     os.remove(destination)
-    return f'Файл {file_name} удален с сервера'
+
+
+def validation_table_file_title(file_title: str) -> bool:
+    list_file_title = file_title.split(' ')
+    if '.xlsx' in list_file_title[1]:
+        date_check = list_file_title[0].split('.')
+        if len(date_check[0]) == 2 and len(date_check[1]) == 2 and len(date_check[2]) == 4:
+            return True
+    return False
