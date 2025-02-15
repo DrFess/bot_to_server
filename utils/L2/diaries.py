@@ -7,7 +7,6 @@ import holidays
 import requests
 from bs4 import BeautifulSoup
 
-from utils.L2.L2_expertise import History
 from settings import GOOGLE_TABLE_KEY, login_l2, password_l2
 
 
@@ -51,8 +50,6 @@ def authorization_l2(connect, login, password):
 
 def add_diaries(connect, history_number: int, service_id: int):
     """Создаёт новый дневник"""
-    expertise_case = History(connect, history_number)
-    expertise_case.write_in_table()
 
     headers = {
         'Accept': 'application/json, text/plain, */*',
