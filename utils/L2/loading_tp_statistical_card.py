@@ -355,11 +355,11 @@ def upload_statistic_card_from_ECP():
                     with open('emergency_room_report.txt', 'a', encoding='utf-8') as file:
                         file.write(f'{datetime.datetime.now()} {file}\n')
                 else:
-                    with open('emergency_room_report.txt', 'a', encoding='utf-8') as file:
+                    with open('emergency_room_errors.txt', 'a', encoding='utf-8') as file:
                         file.write(f'{datetime.datetime.now()} {file}: {doctor_surname} нет в doctors.json\n')
                 session.close()
         except Exception as error:
-            with open('emergency_room_report.txt', 'a', encoding='utf-8') as file:
+            with open('emergency_room_errors.txt', 'a', encoding='utf-8') as file:
                 file.write(f'{datetime.datetime.now()} {file}: {data_for_ecp.get("Фамилия")}: {error}\n')
     return file
 
