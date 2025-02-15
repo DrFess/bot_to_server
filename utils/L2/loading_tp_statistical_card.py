@@ -360,7 +360,7 @@ def upload_statistic_card_from_ECP():
                 session.close()
         except Exception as error:
             with open('emergency_room_errors.txt', 'a', encoding='utf-8') as file:
-                file.write(f'{datetime.datetime.now()} {file}: {data_for_ecp.get("Фамилия")}: {error}\n')
+                file.write(f'{datetime.datetime.now()} {file}: {error}\n')
     return file
 
 
