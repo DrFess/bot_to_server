@@ -353,15 +353,15 @@ def upload_statistic_card_from_ECP():
                             result_class_id=RESULTCLASS_ID_TP
                         )
                     with open('emergency_room_report.txt', 'a', encoding='utf-8') as text_file:
-                        text_file.write(f'{datetime.datetime.now()} {file}\n')
+                        text_file.write(f'{datetime.datetime.now()} {duty_date}\n')
                 else:
                     with open('emergency_room_errors.txt', 'a', encoding='utf-8') as text_file:
-                        text_file.write(f'{datetime.datetime.now()} {file}: {doctor_surname} нет в doctors.json\n')
+                        text_file.write(f'{datetime.datetime.now()} {duty_date}: {doctor_surname} нет в doctors.json\n')
                 session.close()
         except Exception as error:
             with open('emergency_room_errors.txt', 'a', encoding='utf-8') as text_file:
-                text_file.write(f'{datetime.datetime.now()} {file}: {error}\n')
-    return file
+                text_file.write(f'{datetime.datetime.now()} {duty_date}: {error}\n')
+    return duty_date
 
 
 def delete_statistic_card(path: str, file_name: str):
