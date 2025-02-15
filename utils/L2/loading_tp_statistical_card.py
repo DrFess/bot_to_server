@@ -91,7 +91,7 @@ def upload_statistic_card_from_ECP():
                                 mkb_index = data_for_ecp.get('Диагноз по МКБ').split(' ')[0]
                                 diag_id = mkb(session, letter=mkb_index)[0]['Diag_id']
 
-                                next_save = save_visit(
+                                save_visit(
                                     session,
                                     date_save_revers=data_for_ecp.get('Дата осмотра'),
                                     evn_vizit_pl_id=first_save.get('EvnVizitPL_id'),
@@ -109,7 +109,7 @@ def upload_statistic_card_from_ECP():
                                     lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP
                                 )
 
-                                examination_service = add_initial_examination_service(
+                                add_initial_examination_service(
                                     session,
                                     evn_id=first_save.get('EvnVizitPL_id'),
                                     medpersonal_id=med_personal_id,
@@ -159,7 +159,7 @@ def upload_statistic_card_from_ECP():
                                        f'{data_for_ecp.get("Местное лечение")}\n' \
                                        f'{data_for_ecp.get("Домашний режим")}'
 
-                                template = save_text_protocol(
+                                save_text_protocol(
                                     session,
                                     evn_xml_id=template_number[0].get('EvnXml_id'),
                                     evn_vizit_pl_id=first_save.get('EvnVizitPL_id'),
@@ -179,7 +179,7 @@ def upload_statistic_card_from_ECP():
                                 mkb_index = data_for_ecp.get('Код по МКБ-10').split(' ')[0]
                                 diag_id = mkb(session, letter=mkb_index)[0]['Diag_id']
 
-                                next_save = save_visit(
+                                save_visit(
                                     session,
                                     date_save_revers=correct_format_date,
                                     evn_vizit_pl_id=first_save.get('EvnVizitPL_id'),
@@ -231,7 +231,7 @@ def upload_statistic_card_from_ECP():
                                        f'{data_for_ecp.get("Визуально")}\n' \
                                        f'Рекомендовано: {data_for_ecp.get("Рекомендованное")}\n' \
 
-                                template = save_text_protocol(
+                                save_text_protocol(
                                     session,
                                     evn_xml_id=template_number[0].get('EvnXml_id'),
                                     evn_vizit_pl_id=first_save.get('EvnVizitPL_id'),
@@ -265,7 +265,7 @@ def upload_statistic_card_from_ECP():
                             mkb_index = data_for_ecp.get('Диагноз по МКБ').split(' ')[0]
                             diag_id = mkb(session, letter=mkb_index)[0]['Diag_id']
 
-                            next_save = save_visit(
+                            save_visit(
                                 session,
                                 date_save_revers=data_for_ecp.get('Дата осмотра'),
                                 evn_vizit_pl_id=first_save.get('EvnVizitPL_id'),
@@ -282,7 +282,7 @@ def upload_statistic_card_from_ECP():
                                 lpu_section_profile_id=LPU_SECTION_PROFILE_ID_LOR
                             )
 
-                            examination_service = add_initial_examination_service(
+                            add_initial_examination_service(
                                 session,
                                 evn_id=first_save.get('EvnVizitPL_id'),
                                 medpersonal_id=med_personal_id,
@@ -311,7 +311,7 @@ def upload_statistic_card_from_ECP():
 
                             text = create_text(data_for_ecp, duty_date)
 
-                            template = save_text_protocol(
+                            save_text_protocol(
                                 session,
                                 evn_xml_id=template_number[0].get('EvnXml_id'),
                                 evn_vizit_pl_id=first_save.get('EvnVizitPL_id'),
@@ -364,3 +364,9 @@ def upload_statistic_card_from_ECP():
                 print(error)
             except Exception as error:
                 print(f'{data_for_ecp.get("Фамилия")}: {error}')
+
+
+def delete_statistic_card(path: str, file_name: str):
+    destination = os.path.join(path, file_name)
+    os.remove(destination)
+    return f'Файл {file_name} удален с сервера'

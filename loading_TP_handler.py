@@ -5,7 +5,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from utils.L2.loading_tp_statistical_card import upload_statistic_card_from_ECP
+from utils.L2.loading_tp_statistical_card import upload_statistic_card_from_ECP, delete_statistic_card
 
 router = Router()
 
@@ -25,11 +25,13 @@ async def info_loading_handler(message: Message, state: FSMContext):
 
 @router.message(LoadingHandler.step_1)
 async def get_file(message: Message, state: FSMContext):
-    await message.bot.download(file=message.document.file_id, destination=f'table/{message.document.file_name}')
+    file_name = message.document.file_name
+    await message.bot.download(file=message.document.file_id, destination=f'table/{file_name}')
+    await state.update_data(file_name=file_name)
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(text='Да', callback_data='1'))
     builder.row(InlineKeyboardButton(text='Нет', callback_data='0'))
-    await message.answer('Отчет загружен, выгрузить в ЕЦП', reply_markup=builder.as_markup())
+    await message.answer(f'Отчет {message.document.file_name} загружен, выгрузить в ЕЦП', reply_markup=builder.as_markup())
     await state.set_state(LoadingHandler.step_2)
 
 
@@ -40,7 +42,9 @@ async def loading_patients(callback: CallbackQuery, state: FSMContext):
         upload_statistic_card_from_ECP()
         await callback.message.answer('Закончил выгружать в ЕЦП')
     elif callback.data == '0':
-        await callback.message.answer('Отчет удален. Для запуска процедуры выгрузки статталона используй команду из меню')
+        file_name = await state.get_data()
+        delete_statistic_card(path='table/', file_name=file_name.get('file_name'))
+        await callback.message.answer(f'Отчет {file_name.get('file_name')} удален. Для запуска процедуры выгрузки статталона используй команду из меню')
     else:
         await callback.message.answer('Что-то пошло не так')
     await state.clear()
