@@ -39,7 +39,7 @@ async def main():
         loading_stac_handler.router
     )
     session = AiohttpSession(proxy=PROXY_URL)
-    asyncio.create_task(scheduler())
+    # asyncio.create_task(scheduler())
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=session)
     # bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
     await bot.delete_webhook(drop_pending_updates=True)
