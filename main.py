@@ -14,20 +14,20 @@ from settings import TOKEN, PROXY_URL
 from utils.L2.diaries import create_diaries_function
 
 
-async def scheduler():
-    aioschedule.every().day.at('23:45').do(run_create_diaries_task)
-
-    while True:
-        await aioschedule.run_pending()
-        await asyncio.sleep(1)
-
-
-async def run_create_diaries_task():
-    task = asyncio.create_task(create_diaries_function())
-    try:
-        await task
-    except Exception as e:
-        logging.error(f"Ошибка при выполнении create_diaries_function: {e}")
+# async def scheduler():
+#     aioschedule.every().day.at('23:45').do(run_create_diaries_task)
+#
+#     while True:
+#         await aioschedule.run_pending()
+#         await asyncio.sleep(1)
+#
+#
+# async def run_create_diaries_task():
+#     task = asyncio.create_task(create_diaries_function())
+#     try:
+#         await task
+#     except Exception as e:
+#         logging.error(f"Ошибка при выполнении create_diaries_function: {e}")
 
 
 async def main():
