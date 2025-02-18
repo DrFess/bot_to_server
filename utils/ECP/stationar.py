@@ -35,6 +35,7 @@ def export_stories_function():
 
         try:
             data = extract_patient_data_from_L2(int(item))  # данные из истории в виде словаря
+            print(data)
             doctor_surname = data.get('Лечащий врач').split(' ')[0]
 
             login = doctors.get(doctor_surname).get('login')  # получаем логин по фамилии лечащего врача из data
@@ -49,8 +50,10 @@ def export_stories_function():
                 surname=data.get('Фамилия'),
                 patronymic=data.get('Отчество'),
                 birthday=data.get('Дата рождения'),
-            ).get('data')
+            )
             patient = search[0].get('Person_id')  # person_id пациента после поиска его в ЕЦП
+            # print(data.get('Основной диагноз по МКБ'))
+
             diagnosis_id = mkb(session, letter=data.get('Основной диагноз по МКБ'))[0]['Diag_id']  # id диагноза по коду МКБ
             ksg_and_koef = get_KSG_KOEF(  # расчёт КСГ по сроку лечения и коду МКБ -> нужно добавить метод для расчёта по операции
                 session,

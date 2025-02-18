@@ -91,7 +91,7 @@ def search_patient(connect, name: str, surname: str, patronymic: str, birthday: 
 
     response_search = connect.post('https://ecp38.is-mis.ru/', params=params_search, headers=headers_search,
                                    data=data_search)
-    return response_search.json()
+    return response_search.json().get('data')
 
 
 def get_evn_number(connect):

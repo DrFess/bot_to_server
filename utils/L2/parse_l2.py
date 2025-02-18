@@ -205,7 +205,8 @@ def extract_patient_data_from_L2(history_number: int) -> dict:
     authorization_l2(session, login_l2, password_l2)  # авторизация в L2
 
     history = get_history_content(session, history_number)  # все данные по истории болезни
-    directions = history.get('researches')[0].get('children_directions')  # номера направлений всех записей в истории болезни
+    directions = history.get('researches')[0].get(
+        'children_directions')  # номера направлений всех записей в истории болезни
 
     fio = history.get('patient').get('fio_age').split(',')[0]
     birthday = history.get('patient').get('fio_age').split(',')[2]
@@ -218,6 +219,7 @@ def extract_patient_data_from_L2(history_number: int) -> dict:
     for direction in directions:
         if direction.get('services') == ['Первичный осмотр']:
             data = get_history_content(session, direction.get('pk'))
+            # pprint(data)
             for group in data.get('researches')[0].get('research').get('groups'):
                 if group.get('title') == 'Анамнез заболевания':
                     for item in group.get('fields'):
@@ -225,9 +227,9 @@ def extract_patient_data_from_L2(history_number: int) -> dict:
                         value = item.get('value')
                         if key == 'Диагноз направившего учреждения' and value != '':
                             discharge_summary[key] = value
-                        elif item.get('pk') == 18733 and value != '- Не выбрано':
+                        elif item.get('pk') == 18733 and value not in ('- Не выбрано', '-'):
                             discharge_summary[key] = value
-                            with open(path_to_hospitalsJson, 'r') as file:
+                            with open('utils/jsonS/hospitals.json', 'r') as file:
                                 hospitals = json.load(file)
                                 hospital = hospitals.get(value)
                                 discharge_summary['Org_id'] = hospital.get('Org_id')
@@ -312,15 +314,25 @@ def extract_patient_data_from_L2(history_number: int) -> dict:
 
         elif direction.get('services') == ['Выписка -тр']:
             data = get_history_content(session, direction.get('pk'))
+            # pprint(data)
             who_confirmed = data.get('patient').get('doc').split(' ')[0]
             discharge_summary['Лечащий врач'] = who_confirmed
             groups = data.get('researches')[0]
             for group in groups.get('research').get('groups'):
-                if group.get('title') == 'Дата и время поступления':
+                if group.get('title') == 'Период нахождения в стационаре, дневном стационаре':
                     for item in group.get('fields'):
                         key = item.get('title')
                         value = item.get('value')
-                        if key != '' and value != '':
+                        if key == 'с':
+                            discharge_summary['Дата поступления'] = value
+                        elif key == '':
+                            discharge_summary['Время поступления'] = value
+                        elif key == 'Дата выписки':
+                            if '-' in value:
+                                rus_date_list = value.split('-')
+                                value = '.'.join(rus_date_list[::-1])
+                            discharge_summary['Дата выписки'] = value
+                        else:
                             discharge_summary[key] = value
                 elif group.get('title') == 'Дата и время выписки':
                     for item in group.get('fields'):
@@ -338,7 +350,7 @@ def extract_patient_data_from_L2(history_number: int) -> dict:
                         value = item.get('value')
                         if key != '' and value != '':
                             discharge_summary[key] = value
-                elif group.get('title') == 'Диагноз заключительный клинический':
+                elif group.get('title') == 'Заключительный клинический диагноз ':
                     for item in group.get('fields'):
                         key = item.get('title')
                         value = item.get('value')
@@ -375,3 +387,4 @@ def extract_patient_data_from_L2(history_number: int) -> dict:
             data = get_result_obtains(direction.get('pk'))
             discharge_summary['Анализы'] += data
     return discharge_summary
+
