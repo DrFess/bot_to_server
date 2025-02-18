@@ -258,6 +258,3 @@ def export_stories_function():
                 file.write(f'{datetime.now()}: {err}\n')
 
     session.close()
-
-
-export_stories_function()
