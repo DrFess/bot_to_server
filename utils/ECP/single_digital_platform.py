@@ -122,7 +122,7 @@ def get_evn_number(connect):
     }
 
     data = {
-        'year': '2024',
+        'year': '2025',
     }
 
     response = connect.post('https://ecp38.is-mis.ru/', params=params, headers=headers, data=data)
