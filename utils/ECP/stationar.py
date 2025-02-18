@@ -3,7 +3,7 @@ from datetime import datetime
 
 import requests
 
-from settings import proxies, LIST_ID, path_to_doctorsJson
+from settings import proxies, LIST_ID, path_to_doctorsJson, path_to_empoyeesJson
 
 from utils.L2.parse_l2 import get_patients_from_table, extract_patient_data_from_L2
 from utils.ECP.add_operation import get_info_code_operation, save_all_oper_info, add_operation_member, save_oper_anesthesia, \
@@ -145,7 +145,7 @@ def export_stories_function():
                         surgType_id='1'
                     )
                     anesthesiolog = data.get('Протоколы операций')[0].get('Анестезиолог')
-                    with open('utils/jsonS/empoyees.json', 'r') as file:
+                    with open(path_to_empoyeesJson, 'r') as file:
                         doctors_list = json.load(file)
                     for doctor in doctors_list:
                         if anesthesiolog == doctor.get('MedPersonal_Fin') and doctor.get(
