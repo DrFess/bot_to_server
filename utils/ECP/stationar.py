@@ -31,7 +31,7 @@ def export_stories_function():
     session = requests.Session()  # создание сессии подключения
     session.proxies.update(proxies)
 
-    for item in get_patients_from_table(LIST_ID, 'P3:P42'):  # функция получает список номеров выписанных историй (P3:P42)
+    for item in get_patients_from_table(LIST_ID, 'Y3:Y42'):  # функция получает список номеров выписанных историй (P3:P42)
 
         try:
             data = extract_patient_data_from_L2(int(item))  # данные из истории в виде словаря
