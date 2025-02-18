@@ -3,7 +3,7 @@ from datetime import datetime
 
 import requests
 
-from settings import proxies
+from settings import proxies, LIST_ID
 
 from utils.L2.parse_l2 import get_patients_from_table, extract_patient_data_from_L2
 from .add_operation import get_info_code_operation, save_all_oper_info, add_operation_member, save_oper_anesthesia, \
@@ -31,7 +31,7 @@ def export_stories_function():
     session = requests.Session()  # создание сессии подключения
     session.proxies.update(proxies)
 
-    for item in get_patients_from_table('P3:P42'):  # функция получает список номеров выписанных историй (P3:P42)
+    for item in get_patients_from_table(LIST_ID, 'P3:P42'):  # функция получает список номеров выписанных историй (P3:P42)
 
         try:
             data = extract_patient_data_from_L2(int(item))  # данные из истории в виде словаря

@@ -9,12 +9,12 @@ session = requests.Session()
 session.proxies.update(proxies)
 
 
-def get_patients_from_table(interval: str) -> list:
+def get_patients_from_table(list_id: int, interval: str) -> list:
     """Получение списка номеров выписанных историй из сводной гугл-таблицы"""
     gs = gspread.service_account(filename='utils/jsonS/access.json')
     sh = gs.open_by_key(GOOGLE_KEY)
 
-    worksheet = sh.get_worksheet_by_id(0)
+    worksheet = sh.get_worksheet_by_id(list_id)
     result = []
     for item in worksheet.get(interval):
         if len(item) > 0:
