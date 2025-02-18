@@ -43,7 +43,6 @@ def export_stories_function():
             med_staff_fact_id = doctors.get(doctor_surname).get('MedStaffFact_id_stac')  # получаем рабочее id по фамилии лечащего врача из data
 
             entry(session, login=login, password=password)  # авторизация в ЕЦП с данными лечащего врача
-
             search = search_patient(  # поиск пациента
                 session,
                 name=data.get('Имя'),
