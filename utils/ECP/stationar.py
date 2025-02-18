@@ -3,7 +3,7 @@ from datetime import datetime
 
 import requests
 
-from settings import proxies, LIST_ID
+from settings import proxies, LIST_ID, path_to_doctorsJson
 
 from utils.L2.parse_l2 import get_patients_from_table, extract_patient_data_from_L2
 from .add_operation import get_info_code_operation, save_all_oper_info, add_operation_member, save_oper_anesthesia, \
@@ -25,7 +25,7 @@ from .single_digital_platform import (
 
 
 def export_stories_function():
-    with open('utils/jsonS/doctors.json', 'r') as file:  # список словарей с данными врачей
+    with open(path_to_doctorsJson, 'r') as file:  # список словарей с данными врачей
         doctors = json.load(file)
 
     session = requests.Session()  # создание сессии подключения
