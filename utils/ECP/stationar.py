@@ -6,9 +6,9 @@ import requests
 from settings import proxies, LIST_ID, path_to_doctorsJson
 
 from utils.L2.parse_l2 import get_patients_from_table, extract_patient_data_from_L2
-from .add_operation import get_info_code_operation, save_all_oper_info, add_operation_member, save_oper_anesthesia, \
+from utils.ECP.add_operation import get_info_code_operation, save_all_oper_info, add_operation_member, save_oper_anesthesia, \
     create_empty_oper, update_oper
-from .single_digital_platform import (
+from utils.ECP.single_digital_platform import (
     entry,
     search_patient,
     get_KSG_KOEF,
@@ -259,3 +259,6 @@ def export_stories_function():
                 file.write(f'{datetime.now()}: {err}\n')
 
     session.close()
+
+
+export_stories_function()

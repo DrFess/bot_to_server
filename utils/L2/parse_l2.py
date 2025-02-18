@@ -1,6 +1,7 @@
 import requests
 import json
-from settings import proxies, login_l2, password_l2, IMPLANT_FIELDS, GOOGLE_KEY, path_to_hospitalsJson
+from settings import proxies, login_l2, password_l2, IMPLANT_FIELDS, GOOGLE_KEY, path_to_hospitalsJson, \
+    path_to_accessJson
 
 import gspread
 
@@ -11,7 +12,7 @@ session.proxies.update(proxies)
 
 def get_patients_from_table(list_id: int, interval: str) -> list:
     """Получение списка номеров выписанных историй из сводной гугл-таблицы"""
-    gs = gspread.service_account(filename='utils/jsonS/access.json')
+    gs = gspread.service_account(filename=path_to_accessJson)
     sh = gs.open_by_key(GOOGLE_KEY)
 
     worksheet = sh.get_worksheet_by_id(list_id)
