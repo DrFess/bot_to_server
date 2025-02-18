@@ -49,7 +49,7 @@ def export_stories_function():
                 surname=data.get('Фамилия'),
                 patronymic=data.get('Отчество'),
                 birthday=data.get('Дата рождения'),
-            )
+            ).get('data')
             patient = search[0].get('Person_id')  # person_id пациента после поиска его в ЕЦП
             diagnosis_id = mkb(session, letter=data.get('Основной диагноз по МКБ'))[0]['Diag_id']  # id диагноза по коду МКБ
             ksg_and_koef = get_KSG_KOEF(  # расчёт КСГ по сроку лечения и коду МКБ -> нужно добавить метод для расчёта по операции
@@ -258,3 +258,6 @@ def export_stories_function():
                 file.write(f'{datetime.now()}: {err}\n')
 
     session.close()
+
+
+export_stories_function()
