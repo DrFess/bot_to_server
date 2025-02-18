@@ -35,7 +35,6 @@ def export_stories_function():
 
         try:
             data = extract_patient_data_from_L2(int(item))  # данные из истории в виде словаря
-            print(data)
             doctor_surname = data.get('Лечащий врач').split(' ')[0]
 
             login = doctors.get(doctor_surname).get('login')  # получаем логин по фамилии лечащего врача из data
@@ -261,6 +260,3 @@ def export_stories_function():
                 file.write(f'{datetime.now()}: {err}\n')
 
     session.close()
-
-
-export_stories_function()
