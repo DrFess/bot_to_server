@@ -26,6 +26,7 @@ async def info_loading_stac_handler(message: Message, state: FSMContext):
 @router.callback_query(LoadingStacHandler.step_1)
 async def upload_stac_handler(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'stac_1':
+        await callback.message.answer('Пробую выгрузить истории, ожидай')
         export_stories_function()
         await callback.message.answer('Истории выгружены, смотри логи')
     elif callback.data == 'stac_0':
