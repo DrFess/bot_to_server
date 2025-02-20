@@ -3082,9 +3082,9 @@ def create_diaries_function():
 
     authorization_l2(session, login=login_l2, password=password_l2)
 
-    patients = get_patients_from_table('Y6:Y7')  # C3:C42
-    # patients_out_of_stock = get_patients_from_table('K3:K42')  # K3:K42
-    # patients.extend(patients_out_of_stock)
+    patients = get_patients_from_table('C3:C40')  # C3:C42
+    patients_out_of_stock = get_patients_from_table('K3:K40')  # K3:K42
+    patients.extend(patients_out_of_stock)
 
     for history_number in patients:
         try:
