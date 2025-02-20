@@ -229,24 +229,24 @@ def export_stories_function():
 
                 template = create_template(session, evn_card['EvnSection_id'], med_staff_fact_id=med_staff_fact_id)  # создаёт пустой шаблон выписного эпикриза по id шаблона
 
-                update_research_evn_template(  # обновляет исследованиями данные шаблона выписного эпикриза
-                    session,
-                    template_id=template['EvnXml_id'],
-                    text=data.get('Анализы')
-                )
-
-                update_treatment_evn_template(  # обновляет лечением данные шаблона выписного эпикриза
-                    session,
-                    template_id=template['EvnXml_id'],
-                    text=f'{data.get("Консервативное")}\n{data.get("Оперативные вмешательства (операции), включая сведения об анестезиологическом пособии")}'
-                )
-
-                update_recommendation_evn_template(  # обновляет рекомендациями данные шаблона выписного эпикриза
-                    session,
-                    template_id=template['EvnXml_id'],
-                    text=f'{data.get("Наблюдение специалистов на амбулаторном этапе (явка на осмотр специалистов не позднее 7 дней после выписки из стационара в поликлинику по месту жительства)")}'
-                         f'\n{data.get("Ограничение физических нагрузок")}\n{data.get("Уход за послеоперационной раной")}\n'
-                )
+                # update_research_evn_template(  # обновляет исследованиями данные шаблона выписного эпикриза
+                #     session,
+                #     template_id=template['EvnXml_id'],
+                #     text=data.get('Анализы')
+                # )
+                #
+                # update_treatment_evn_template(  # обновляет лечением данные шаблона выписного эпикриза
+                #     session,
+                #     template_id=template['EvnXml_id'],
+                #     text=f'{data.get("Консервативное")}\n{data.get("Оперативные вмешательства (операции), включая сведения об анестезиологическом пособии")}'
+                # )
+                #
+                # update_recommendation_evn_template(  # обновляет рекомендациями данные шаблона выписного эпикриза
+                #     session,
+                #     template_id=template['EvnXml_id'],
+                #     text=f'{data.get("Наблюдение специалистов на амбулаторном этапе (явка на осмотр специалистов не позднее 7 дней после выписки из стационара в поликлинику по месту жительства)")}'
+                #          f'\n{data.get("Ограничение физических нагрузок")}\n{data.get("Уход за послеоперационной раной")}\n'
+                # )
                 print(f'{data.get("Фамилия")} в ЕЦП загружен')
                 with open('uploaded_stories.txt', 'a') as file:
                     file.write(f'{datetime.now()}: {data.get("Фамилия")} в ЕЦП загружен\n')
