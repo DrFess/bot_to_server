@@ -16,12 +16,11 @@ from settings import TOKEN, PROXY_URL
 
 
 async def scheduler():
-    aioschedule.every().day.at('01:33').do(start_scheduler)
+    aioschedule.every().day.at('23:45').do(start_scheduler)
 
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
-
 
 
 async def main():
