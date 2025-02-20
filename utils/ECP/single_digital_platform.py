@@ -785,7 +785,7 @@ def create_template(connect, person_evn_id, med_staff_fact_id):
     data = {
         'itemSectionCode': 'EvnXmlEpikriz',
         'Evn_id': f'{person_evn_id}',
-        'XmlTemplate_id': '380101000412244',
+        'XmlTemplate_id': '380101000189495',
         'XmlType_id': '10',
         'isSelect': 'true',
         'MedStaffFact_id': med_staff_fact_id,
