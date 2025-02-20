@@ -9,14 +9,14 @@ from aiogram.client.session.aiohttp import AiohttpSession
 import loading_TP_handler
 import loading_stac_handler
 import schedule_handler
+from schedule_handler import start_scheduler
 import start_menu_handler
 from middleware import AllowedUserMiddleware
 from settings import TOKEN, PROXY_URL
-from utils.L2.diaries import create_diaries_function
 
 
 async def scheduler():
-    aioschedule.every().day.at('01:18').do(create_diaries_function)
+    aioschedule.every().day.at('01:24').do(start_scheduler)
 
     while True:
         await aioschedule.run_pending()

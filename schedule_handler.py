@@ -9,7 +9,7 @@ router = Router()
 
 
 @router.message(Command(commands=['scheduler']))
-async def scheduler(message: Message):
+async def start_scheduler(message: Message):
     await message.bot.send_message(chat_id=admin, text='Запущен процесс создания дневников')
     if create_diaries_function():
         await message.bot.send_message(chat_id=admin, text='Дневники созданы, проверяй')
