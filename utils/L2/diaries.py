@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 
 import gspread
@@ -241,7 +241,7 @@ def save_results(connect, pk, pk_2, local_status, history_number, what_inspectio
                                 'title': 'Дата осмотра',
                                 'hide': False,
                                 'values_to_input': [],
-                                'value': datetime.now().strftime('%Y-%m-%d'),
+                                'value': (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d'),
                                 'field_type': 1,
                                 'can_edit': False,
                                 'default_value': '',
