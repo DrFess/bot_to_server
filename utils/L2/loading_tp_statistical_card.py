@@ -272,6 +272,7 @@ def upload_statistic_card_from_ECP():
                             date_save=duty_date,
                             time_save=data_for_ecp.get('Время осмотра'),
                             med_staff_fact_id=med_staff_fact_id,
+                            treatment_class_id='2',
                             service_type_id='6',
                             diag_id=diag_id,
                             diagnos_text=data_for_ecp.get('Диагноз'),
