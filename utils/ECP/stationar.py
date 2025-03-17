@@ -187,24 +187,34 @@ def export_stories_function():
                     )
 
                     """Блок добавления импланта"""
-                    count_implants_in_oper = int(data.get('Протоколы операций')[0].get('Количество имплантов'))
-                    implants_in_oper = data.get('Протоколы операций')[0].get('Импланты')
-                    for implant in implants_in_oper:
-                        if 'спица' in implant or 'nail' in implant or 'стержень' in implant:
+                    implants_in_oper = data.get('Протоколы операций')[0].get('Ход операции')
+                    title_operation = data.get('Протоколы операций')[0].get('Название операции')
+                    if 'удаление' not in title_operation.lower():
+                        if 'спиц' in implants_in_oper or 'стержень' in implants_in_oper or 'TEN' in implants_in_oper:
                             implant_id = '856'  # стержень
                             implant_title = 'Стержень костный ортопедический, нерассасывающийся'
-                        elif 'винт' in implant:
+                        elif 'винт' in implants_in_oper:
                             implant_id = '857'  # винт
                             implant_title = 'Винт костный ортопедический, нерассасывающийся, стерильный'
-                        else:
+                        elif 'пластин' in implants_in_oper:
+                            implant_id = '859'  # пластина
+                            implant_title = 'Пластина накостная для фиксации переломов винтами, нерассасывающаяся, стерильная'
+                        elif 'фиксатор' in implants_in_oper or 'пуговиц' in implants_in_oper:
+                            implant_id = '846'
+                            implant_title = 'Фиксатор связок'
+                        elif 'серкляж' in implants_in_oper:
                             implant_id = '930'  # нить
                             implant_title = 'Нить хирургическая из поли(L-лактид-ко-капролактона)'
-                        save_implant_type_link(
-                            session,
-                            evn_usluga_oper_id=oper_id,
-                            implant_id=implant_id,
-                            implant_name=implant_title
-                        )
+                        else:
+                            implant_id = None
+                            implant_title = None
+                        if implant_id is not None and implant_title is not None:
+                            save_implant_type_link(
+                                session,
+                                evn_usluga_oper_id=oper_id,
+                                implant_id=implant_id,
+                                implant_name=implant_title
+                            )
 
                 save_data(  # функция переводит пациента в выписанные
                     session,
