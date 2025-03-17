@@ -176,7 +176,8 @@ def save_visit(
         diagnos_text: str,
         lpu_section_id: str,
         vizit_type_id: str,
-        lpu_section_profile_id: str
+        lpu_section_profile_id: str,
+        usluga_complex_id: str
 ):
     """Сохраняет все данные посещения"""
 
@@ -242,7 +243,7 @@ def save_visit(
         'Eye_id': 'null',
         'MedicalCareKind_id': '6',
         'MesRegion_id': 'null',
-        'UslugaComplex_uid': 'null',
+        'UslugaComplex_uid': usluga_complex_id,
         'DispClass_id': 'null',
         'EvnPLDisp_id': '',
         'PersonDisp_id': '',

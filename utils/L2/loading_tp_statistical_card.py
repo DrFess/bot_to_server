@@ -104,24 +104,25 @@ def upload_statistic_card_from_ECP():
                                 diagnos_text=data_for_ecp.get('Диагноз'),
                                 lpu_section_id=LPU_SECTION_ID_TP,
                                 vizit_type_id=VIZIT_TYPE_ID_TP,
-                                lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP
+                                lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP,
+                                usluga_complex_id=USLUGA_COMPLEX_ID_TP_FIRST
                             )
 
-                            add_initial_examination_service(
-                                session,
-                                evn_id=first_save.get('EvnVizitPL_id'),
-                                medpersonal_id=med_personal_id,
-                                person_id=patient_data[0].get('Person_id'),
-                                personevn_id=patient_data[0].get('PersonEvn_id'),
-                                server_id=patient_data[0].get('Server_id'),
-                                medstafffact_id=med_staff_fact_id,
-                                exam_date=duty_date,
-                                start_time=data_for_ecp.get('Время осмотра'),
-                                end_time=data_for_ecp.get('Время осмотра'),
-                                usluga_complex_id=USLUGA_COMPLEX_ID_TP_FIRST,
-                                lpu_section_id=LPU_SECTION_ID_TP,
-                                lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP
-                            )
+                            # add_initial_examination_service(
+                            #     session,
+                            #     evn_id=first_save.get('EvnVizitPL_id'),
+                            #     medpersonal_id=med_personal_id,
+                            #     person_id=patient_data[0].get('Person_id'),
+                            #     personevn_id=patient_data[0].get('PersonEvn_id'),
+                            #     server_id=patient_data[0].get('Server_id'),
+                            #     medstafffact_id=med_staff_fact_id,
+                            #     exam_date=duty_date,
+                            #     start_time=data_for_ecp.get('Время осмотра'),
+                            #     end_time=data_for_ecp.get('Время осмотра'),
+                            #     usluga_complex_id=USLUGA_COMPLEX_ID_TP_FIRST,
+                            #     lpu_section_id=LPU_SECTION_ID_TP,
+                            #     lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP
+                            # )
 
                             for_template = date_in_milliseconds()
                             template_number = create_template(
@@ -192,24 +193,25 @@ def upload_statistic_card_from_ECP():
                                 diagnos_text=data_for_ecp.get('Диагноз'),
                                 lpu_section_id=LPU_SECTION_ID_TP,
                                 vizit_type_id=VIZIT_TYPE_ID_DISEASE,
-                                lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP
+                                lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP,
+                                usluga_complex_id=USLUGA_COMPLEX_ID_TP_SECOND
                             )
 
-                            add_initial_examination_service(
-                                session,
-                                evn_id=first_save.get('EvnVizitPL_id'),
-                                medpersonal_id=med_personal_id,
-                                person_id=patient_data[0].get('Person_id'),
-                                personevn_id=patient_data[0].get('PersonEvn_id'),
-                                server_id=patient_data[0].get('Server_id'),
-                                medstafffact_id=med_staff_fact_id,
-                                exam_date=duty_date,
-                                start_time=data_for_ecp.get('Время осмотра'),
-                                end_time=data_for_ecp.get('Время осмотра'),
-                                usluga_complex_id=USLUGA_COMPLEX_ID_TP_SECOND,
-                                lpu_section_id=LPU_SECTION_ID_TP,
-                                lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP
-                            )
+                            # add_initial_examination_service(
+                            #     session,
+                            #     evn_id=first_save.get('EvnVizitPL_id'),
+                            #     medpersonal_id=med_personal_id,
+                            #     person_id=patient_data[0].get('Person_id'),
+                            #     personevn_id=patient_data[0].get('PersonEvn_id'),
+                            #     server_id=patient_data[0].get('Server_id'),
+                            #     medstafffact_id=med_staff_fact_id,
+                            #     exam_date=duty_date,
+                            #     start_time=data_for_ecp.get('Время осмотра'),
+                            #     end_time=data_for_ecp.get('Время осмотра'),
+                            #     usluga_complex_id=USLUGA_COMPLEX_ID_TP_SECOND,
+                            #     lpu_section_id=LPU_SECTION_ID_TP,
+                            #     lpu_section_profile_id=LPU_SECTION_PROFILE_ID_TP
+                            # )
 
                             for_template = date_in_milliseconds()
                             template_number = create_template(
@@ -278,24 +280,25 @@ def upload_statistic_card_from_ECP():
                             diagnos_text=data_for_ecp.get('Диагноз'),
                             lpu_section_id=LPU_SECTION_ID_LOR,
                             vizit_type_id=VIZIT_TYPE_ID_LOR,
-                            lpu_section_profile_id=LPU_SECTION_PROFILE_ID_LOR
+                            lpu_section_profile_id=LPU_SECTION_PROFILE_ID_LOR,
+                            usluga_complex_id=USLUGA_COMPLEX_ID_LOR
                         )
 
-                        add_initial_examination_service(
-                            session,
-                            evn_id=first_save.get('EvnVizitPL_id'),
-                            medpersonal_id=med_personal_id,
-                            person_id=patient_data[0].get('Person_id'),
-                            personevn_id=patient_data[0].get('PersonEvn_id'),
-                            server_id=patient_data[0].get('Server_id'),
-                            medstafffact_id=med_staff_fact_id,
-                            exam_date=duty_date,
-                            start_time=data_for_ecp.get('Время осмотра'),
-                            end_time=data_for_ecp.get('Время осмотра'),
-                            usluga_complex_id=USLUGA_COMPLEX_ID_LOR,
-                            lpu_section_id=LPU_SECTION_ID_LOR,
-                            lpu_section_profile_id=LPU_SECTION_PROFILE_ID_LOR
-                        )
+                        # add_initial_examination_service(
+                        #     session,
+                        #     evn_id=first_save.get('EvnVizitPL_id'),
+                        #     medpersonal_id=med_personal_id,
+                        #     person_id=patient_data[0].get('Person_id'),
+                        #     personevn_id=patient_data[0].get('PersonEvn_id'),
+                        #     server_id=patient_data[0].get('Server_id'),
+                        #     medstafffact_id=med_staff_fact_id,
+                        #     exam_date=duty_date,
+                        #     start_time=data_for_ecp.get('Время осмотра'),
+                        #     end_time=data_for_ecp.get('Время осмотра'),
+                        #     usluga_complex_id=USLUGA_COMPLEX_ID_LOR,
+                        #     lpu_section_id=LPU_SECTION_ID_LOR,
+                        #     lpu_section_profile_id=LPU_SECTION_PROFILE_ID_LOR
+                        # )
 
                         for_template = date_in_milliseconds()
                         template_number = create_template(
