@@ -171,7 +171,7 @@ def save_visit(
         time_save: str,
         med_staff_fact_id: str,
         treatment_class_id: str,
-        service_type_id: str,
+        vizit_class_id: str,
         diag_id: str,
         diagnos_text: str,
         lpu_section_id: str,
@@ -233,8 +233,8 @@ def save_visit(
         'MedStaffFact_sid': 'null',
         'TreatmentClass_id': treatment_class_id,  # Вид обращения 1-заболевание, 2-неотложка(заболевание)
         'VizitActiveType_id': 'null',
-        'ServiceType_id': service_type_id,  # для первичного '6', для повторного должно быть '4'
-        'VizitClass_id': '1',
+        'ServiceType_id': '1',
+        'VizitClass_id': vizit_class_id,  # для первичного '1', для повторного должно быть '2',
         'VizitType_id': vizit_type_id,  # 380101000000063 - травма, 380101000000016 - заболевание
         'MedOffice_id': 'null',
         'RiskLevel_id': 'null',
