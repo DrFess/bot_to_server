@@ -870,7 +870,7 @@ def update_treatment_evn_template(connect, template_id, text):
     return response.status_code
 
 
-def update_recommendation_evn_template(connect, template_id, text):
+def update_recommendation_evn_template(connect, template_id, text: str):
     """Заполняет поле рекомендации в выписке"""
 
     headers = {
@@ -898,8 +898,8 @@ def update_recommendation_evn_template(connect, template_id, text):
 
     data = {
         'EvnXml_id': f'{template_id}',
-        'name': 'autoname96',
-        'value': f'<p><br>7. Рекомендации: {text}</p>',
+        'name': 'recommendations',
+        'value': text,
         'isHTML': '1',
     }
 
