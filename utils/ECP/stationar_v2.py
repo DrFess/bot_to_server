@@ -1,9 +1,7 @@
 import datetime
 import json
 
-import requests
-
-from settings import proxies, login_l2, password_l2, path_to_doctorsJson, path_to_empoyeesJson
+from settings import proxies, login_l2, password_l2, path_to_doctorsJson, path_to_empoyeesJson, login, password
 from utils.ECP.add_operation import get_info_code_operation, save_all_oper_info, add_operation_member, \
     save_oper_anesthesia, create_empty_oper, update_oper
 from utils.ECP.classes import PatientECP
@@ -16,7 +14,7 @@ from utils.L2.parse_l2 import authorization_l2, get_all_patients_in_ward, get_pa
 
 def working_with_stories(connect):
 
-    entry(connect, login='daa87', password='Daa026')
+    entry(connect, login=login, password=password)
 
     day_today = datetime.datetime.today().strftime('%d.%m.%Y')
 
@@ -53,7 +51,7 @@ def working_with_stories(connect):
     for patient_1 in patients_in_L2:
         """Оформляет случай госпитализации в ЕЦП"""
         if patient_1.get('fio_age') not in patients_in_ECP:
-            examination_number = get_first_examination_number_L2(patient_1.get('number'))
+            examination_number = get_first_examination_number_L2(connect, patient_1.get('number'))
             first_examination_data = get_first_examination_data_L2(connect, examination_number)
 
             fio_patient = patient_1.get('fio_age')[0].split(' ')

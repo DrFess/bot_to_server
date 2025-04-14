@@ -6,7 +6,7 @@ from settings import proxies, login_l2, password_l2, IMPLANT_FIELDS, GOOGLE_KEY,
 import gspread
 
 
-session = requests.Session()
+# session = requests.Session()
 # session.proxies.update(proxies)
 
 
@@ -183,7 +183,7 @@ def obtain_research_data(connect, pk_desc: int):
     return response.json()
 
 
-def get_result_obtains(index_number: int) -> str:
+def get_result_obtains(session, index_number: int) -> str:
     """Возвращает результаты исследования по номеру направления"""
     obtain = obtain_research_data(session, index_number)
     result = f"\n{obtain.get('direction').get('date')} "
@@ -195,7 +195,7 @@ def get_result_obtains(index_number: int) -> str:
     return result
 
 
-def extract_patient_data_from_L2(history_number: int) -> dict:
+def extract_patient_data_from_L2(session, history_number: int) -> dict:
 
     discharge_summary = {
         'Анализы': '',
@@ -432,7 +432,7 @@ def get_patient_fio_birthday_L2(connect, number: str):
     return {'number': number, 'fio_age': (fio.lower(), age)}
 
 
-def get_first_examination_number_L2(history_number):
+def get_first_examination_number_L2(session, history_number):
     """Возвращает номер первичного осмотра"""
     researches = get_history_content(session, history_number)
     examination_numbers = researches.get('researches')[0].get('children_directions')
