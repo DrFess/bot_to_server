@@ -391,7 +391,7 @@ def extract_patient_data_from_L2(history_number: int) -> dict:
 
 def connect_to_google_sheets():
     """Подключение в гугл таблице"""
-    gs = gspread.service_account(filename='access.json')
+    gs = gspread.service_account(filename=path_to_accessJson)
     sh = gs.open_by_key(GOOGLE_KEY)
     return sh
 

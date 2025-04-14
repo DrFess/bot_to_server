@@ -3,7 +3,7 @@ import json
 
 import requests
 
-from settings import proxies, login_l2, password_l2
+from settings import proxies, login_l2, password_l2, path_to_doctorsJson, path_to_empoyeesJson
 from utils.ECP.add_operation import get_info_code_operation, save_all_oper_info, add_operation_member, \
     save_oper_anesthesia, create_empty_oper, update_oper
 from utils.ECP.classes import PatientECP
@@ -129,7 +129,7 @@ def working_with_stories():
                     {'fio': fio_extract, 'birthday': birthday, 'number_L2': number_L2, 'patient': patient_4}
                 )
 
-    with open('jsonS/doctors.json', 'r') as file:  # список словарей с данными врачей
+    with open(path_to_doctorsJson, 'r') as file:  # список словарей с данными врачей
         doctors = json.load(file)
 
     for extract_patient in extracts_patients_in_ECP:
@@ -179,7 +179,7 @@ def working_with_stories():
                 surgType_id='1'
             )
             anesthesiolog = operation_data.get('Анестезиолог')
-            with open('jsonS/empoyees.json', 'r') as file:
+            with open(path_to_empoyeesJson, 'r') as file:
                 doctors_list = json.load(file)
             for doctor in doctors_list:
                 if anesthesiolog == doctor.get('MedPersonal_Fin') and doctor.get('WorkData_MedStaff_endDate') is None:
