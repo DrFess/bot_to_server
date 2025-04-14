@@ -6,6 +6,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.client.session.aiohttp import AiohttpSession
 
+import hospitalisation_stac_handler
 import loading_TP_handler
 import loading_stac_handler
 import schedule_handler
@@ -30,7 +31,8 @@ async def main():
         start_menu_handler.router,
         loading_TP_handler.router,
         loading_stac_handler.router,
-        schedule_handler.router
+        schedule_handler.router,
+        hospitalisation_stac_handler.router
     )
     session = AiohttpSession(proxy=PROXY_URL)
     asyncio.create_task(scheduler())
