@@ -14,22 +14,20 @@ from utils.L2.parse_l2 import authorization_l2, get_all_patients_in_ward, get_pa
     get_extracts_number, get_diaries_content, get_extracts_data
 
 
-def working_with_stories():
-    session = requests.Session()  # создание сессии подключения
-    session.proxies.update(proxies)
+def working_with_stories(connect):
 
-    entry(session, login='daa87', password='Daa026')
+    entry(connect, login='daa87', password='Daa026')
 
     day_today = datetime.datetime.today().strftime('%d.%m.%Y')
 
     patients_in_ECP = []
     patients_in_ECP_full = []
-    patients_in_ecp_request = get_all_patients_stac(session, day_today)
+    patients_in_ecp_request = get_all_patients_stac(connect, day_today)
 
     for patient in patients_in_ecp_request:
         if patient.get('LpuSection_id') == '380101000015688':
             patient_ecp = PatientECP(
-                connect=session,
+                connect=connect,
                 person_evn_id=patient.get('PersonEvn_id'),
                 person_id=patient.get('Person_id'),
                 medpersonal_id=patient.get('MedPersonal_id'),
@@ -43,20 +41,20 @@ def working_with_stories():
 
             patients_in_ECP.append((patient_ecp.person_fio, patient_ecp.person_birthday))
 
-    authorization_l2(session, login=login_l2, password=password_l2)
+    authorization_l2(connect, login=login_l2, password=password_l2)
     patients_number = get_all_patients_in_ward('C3:C40')  # 'C3:C40'
     patients_number.extend(get_all_patients_in_ward('K3:K40'))
-    patients_in_L2 = [get_patient_fio_birthday_L2(session, patient_l2) for patient_l2 in patients_number]
+    patients_in_L2 = [get_patient_fio_birthday_L2(connect, patient_l2) for patient_l2 in patients_number]
 
     extracts_patients_number = get_all_patients_in_ward('P3:P40')  # 'P3:P40'
-    extracts_patients_in_L2 = [get_patient_fio_birthday_L2(session, patient_l2) for patient_l2 in
+    extracts_patients_in_L2 = [get_patient_fio_birthday_L2(connect, patient_l2) for patient_l2 in
                                extracts_patients_number]
 
     for patient_1 in patients_in_L2:
         """Оформляет случай госпитализации в ЕЦП"""
         if patient_1.get('fio_age') not in patients_in_ECP:
             examination_number = get_first_examination_number_L2(patient_1.get('number'))
-            first_examination_data = get_first_examination_data_L2(session, examination_number)
+            first_examination_data = get_first_examination_data_L2(connect, examination_number)
 
             fio_patient = patient_1.get('fio_age')[0].split(' ')
             name = fio_patient[1]
@@ -64,19 +62,19 @@ def working_with_stories():
             patronymic = fio_patient[2]
 
             search = search_patient(  # поиск пациента
-                session,
+                connect,
                 name=name,
                 surname=surname,
                 patronymic=patronymic,
                 birthday=patient_1.get('fio_age')[1],
             )
-            evn_number = get_evn_number(session)  # получаем номер случая лечения
+            evn_number = get_evn_number(connect)  # получаем номер случая лечения
 
             if search:
                 if first_examination_data.get(
                         'Вид госпитализации') == 'экстренная':  # сохранение карты выбывшего == госпитализация/оформлен
                     save_EVN(
-                        session,
+                        connect,
                         patient_id=search[0].get('Person_id'),
                         patient_person_evn_id=search[0]['PersonEvn_id'],
                         patient_server_id=search[0]['Server_id'],
@@ -95,7 +93,7 @@ def working_with_stories():
 
                 elif first_examination_data.get('Вид госпитализации') == 'плановая':
                     save_EVN(
-                        session,
+                        connect,
                         patient_id=search[0].get('Person_id'),
                         patient_person_evn_id=search[0]['PersonEvn_id'],
                         patient_server_id=search[0]['Server_id'],
@@ -134,18 +132,18 @@ def working_with_stories():
 
     for extract_patient in extracts_patients_in_ECP:
 
-        history_count = get_history_count(session, int(extract_patient.get('number_L2')))
+        history_count = get_history_count(connect, int(extract_patient.get('number_L2')))
 
         if history_count.get('operation') and not extract_patient.get('patient').ksg:
             """Добавляет услугу - операцию"""
-            operation_data = get_operation_data(session, extract_patient.get('number_L2'))
+            operation_data = get_operation_data(connect, extract_patient.get('number_L2'))
 
             who_operate = operation_data.get('Оперировавший хирург').split(' ')[0]
             who_operate_med_personal_id = doctors.get(who_operate).get('MedPersonal_id')
             who_operate_med_staf_fact_id = doctors.get(who_operate).get('MedStaffFact_id')
 
             current_oper_code = get_info_code_operation(
-                session,
+                connect,
                 code=operation_data.get('Код операции').split(' ')[0].rstrip('.').lstrip('A').lstrip('А'),
                 oper_date=operation_data.get('Дата проведения'),
                 person_id=extract_patient.get('patient').person_id,
@@ -153,7 +151,7 @@ def working_with_stories():
             )
 
             first_oper_save = save_all_oper_info(
-                session,
+                connect,
                 medPersonal_id=who_operate_med_personal_id,
                 person_id=extract_patient.get('patient').person_id,
                 personEvn_id=extract_patient.get('patient').person_evn_id,
@@ -172,7 +170,7 @@ def working_with_stories():
             oper_id = first_oper_save.get('EvnUslugaOper_id')  # возвращает EvnUslugaOper_id == EvnUslugaOperBrig_pid
 
             add_operation_member(
-                session,
+                connect,
                 medPersonal_id=who_operate_med_personal_id,
                 evn_usluga_oper_id=oper_id,
                 medStaffFact_id=who_operate_med_staf_fact_id,
@@ -186,7 +184,7 @@ def working_with_stories():
                     anesthesiolog_med_personal_id = doctor.get('MedPersonal_id')
                     anesthesiolog_staf_fact_id = doctor.get('MedStaffFact_id')
                     add_operation_member(
-                        session,
+                        connect,
                         medPersonal_id=anesthesiolog_med_personal_id,
                         evn_usluga_oper_id=oper_id,
                         medStaffFact_id=anesthesiolog_staf_fact_id,
@@ -202,19 +200,19 @@ def working_with_stories():
                 anesthesia_class_id = '21'
 
             save_oper_anesthesia(
-                session,
+                connect,
                 evn_usluga_oper_anest_id=oper_id,
                 anesthesiaClass_id=anesthesia_class_id
             )
 
             operation_template = create_empty_oper(
-                session,
+                connect,
                 evn_id=oper_id,
                 medStaffFact_id=who_operate_med_staf_fact_id
             )
 
             update_oper(
-                session,
+                connect,
                 evn_xml_id=operation_template.get('EvnXml_id'),
                 text=operation_data.get('Ход операции')
             )
@@ -243,7 +241,7 @@ def working_with_stories():
                     implant_title = None
                 if implant_id is not None and implant_title is not None:
                     save_implant_type_link(
-                        session,
+                        connect,
                         evn_usluga_oper_id=oper_id,
                         implant_id=implant_id,
                         implant_name=implant_title
@@ -251,9 +249,9 @@ def working_with_stories():
             print(f'Done! Operation to {extract_patient.get("fio")} added')
 
         if history_count.get('extracts') == 1:
-            extracts_number = get_extracts_number(session, int(extract_patient.get('number_L2')))
+            extracts_number = get_extracts_number(connect, int(extract_patient.get('number_L2')))
             pk_extract = extracts_number.get('data')[0].get('pk')
-            extract_content = get_diaries_content(session, pk_extract)
+            extract_content = get_diaries_content(connect, pk_extract)
             treatment_doctor = extract_content.get('researches')[0].get('whoConfirmed')
             doctor_surname = str(treatment_doctor).split(', ')[0].split(' ')[0]
             med_personal_id = doctors.get(doctor_surname).get(
@@ -264,7 +262,7 @@ def working_with_stories():
             if extract_patient.get('patient').medpersonal_id != med_personal_id:
                 """Меняет лечащего врача по выписке"""
                 set_treating_doctor(
-                    connect=session,
+                    connect=connect,
                     evn_section_id=extract_patient.get('patient').evn_section_id,
                     person_id=extract_patient.get('patient').person_id,
                     person_evn_id=extract_patient.get('patient').person_evn_id,
@@ -274,13 +272,13 @@ def working_with_stories():
                 )
                 print(f'У пациента {extract_patient.get("fio")} сменен лечащий врач на {doctor_surname}')
 
-            extract_content = get_extracts_data(session, pk_extract)
+            extract_content = get_extracts_data(connect, pk_extract)
 
-            diagnosis_id = mkb(session, letter=extract_content.get('Основной диагноз по МКБ'))[0].get('Diag_id')
+            diagnosis_id = mkb(connect, letter=extract_content.get('Основной диагноз по МКБ'))[0].get('Diag_id')
 
             ksg_and_koef = get_KSG_KOEF(
                 # расчёт КСГ по сроку лечения и коду МКБ -> нужно добавить метод для расчёта по операции
-                session,
+                connect,
                 date_start=extract_content.get('Дата поступления'),
                 date_end=extract_content.get('Дата выписки'),
                 patient_id=extract_patient.get('patient').person_id,
@@ -288,7 +286,7 @@ def working_with_stories():
             )
 
             save_data(  # функция переводит пациента в выписанные
-                session,
+                connect,
                 date_start=extract_content.get('Дата поступления'),
                 date_end=extract_content.get('Дата выписки'),
                 ksg_val=ksg_and_koef.get('KSG'),
@@ -308,11 +306,11 @@ def working_with_stories():
                 med_staff_fact_id=med_staff_fact_id
             )
 
-            template = create_template(session, extract_patient.get('patient').evn_section_id,
+            template = create_template(connect, extract_patient.get('patient').evn_section_id,
                                        med_staff_fact_id=med_staff_fact_id)  # создаёт пустой шаблон выписного эпикриза по id шаблона
 
             update_evn_template(  # обновляет рекомендациями данные шаблона выписного эпикриза
-                session,
+                connect,
                 template_id=template.get('EvnXml_id'),
                 chapter='Condition',
                 text=f'{extract_content.get("жалобы при поступлении")}'
@@ -321,11 +319,10 @@ def working_with_stories():
             )
 
             update_evn_template(  # обновляет рекомендациями данные шаблона выписного эпикриза
-                session,
+                connect,
                 template_id=template.get('EvnXml_id'),
                 chapter='recommendations',
                 text=f'{extract_content.get("Наблюдение специалистов на амбулаторном этапе (явка на осмотр специалистов не позднее 7 дней после выписки из стационара в поликлинику по месту жительства)")}'
                      f'\n{extract_content.get("Ограничение физических нагрузок")}\n{extract_content.get("Уход за послеоперационной раной")}\n'
             )
             print(f'{extract_patient.get("fio")} выписан')
-    session.close()
