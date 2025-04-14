@@ -7,7 +7,7 @@ import gspread
 
 
 session = requests.Session()
-session.proxies.update(proxies)
+# session.proxies.update(proxies)
 
 
 def get_patients_from_table(list_id: int, interval: str) -> list:
