@@ -121,8 +121,12 @@ def get_evn_number(connect):
         'm': 'getEvnPSNumber',
     }
 
+    current_datetime = datetime.now()
+    current_year = current_datetime.year
+    current_year_str = str(current_year)
+
     data = {
-        'year': '2025',
+        'year': current_year_str,
     }
 
     response = connect.post('https://ecp38.is-mis.ru/', params=params, headers=headers, data=data)
@@ -870,7 +874,7 @@ def update_treatment_evn_template(connect, template_id, text):
     return response.status_code
 
 
-def update_recommendation_evn_template(connect, template_id, text: str):
+def update_recommendation_evn_template(connect, template_id, chapter: str, text: str):
     """Заполняет поле рекомендации в выписке"""
 
     headers = {
@@ -898,7 +902,7 @@ def update_recommendation_evn_template(connect, template_id, text: str):
 
     data = {
         'EvnXml_id': f'{template_id}',
-        'name': 'recommendations',
+        'name': chapter,  # 'Condition' - состояние при поступлении, AdditionalInf - дополнительные сведения, recommendations - рекомендации
         'value': text,
         'isHTML': '1',
     }
@@ -937,7 +941,7 @@ def get_EMD_data(connect):
     data = {
         'EMDRegistry_Objects': 'false',
         'EMDRegistry_ObjectName': 'EvnXml',
-        'EMDRegistry_ObjectIDs': '["380101021673847"]', # const
+        'EMDRegistry_ObjectIDs': '["380101021673847"]',  # const
         'isMOSign': 'false',
         'isDocArray': 'false',
         'isMedikata': 'false',
@@ -1217,3 +1221,133 @@ def save_implant_type_link(connect, evn_usluga_oper_id: str, implant_id: str, im
 
     response = connect.post('https://ecp38.is-mis.ru/', params=params, headers=headers, data=data).json()
     return response
+
+
+def get_all_patients_stac(connect, date: str):
+    """Получает пациентов находящихся в стационаре"""
+    headers = {
+        'accept': '*/*',
+        'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'dnt': '1',
+        'origin': 'https://ecp38.is-mis.ru',
+        'priority': 'u=1, i',
+        'referer': 'https://ecp38.is-mis.ru/?c=promed',
+        'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+    }
+
+    params = {
+        'c': 'EvnSection',
+        'm': 'getSectionTreeData',
+    }
+
+    data = {
+        'object': 'LpuSection',
+        'object_id': 'LpuSection_id',
+        'object_value': '380101000015688',
+        'level': '0',
+        'LpuSection_id': '380101000015688',
+        'ARMType': 'stac',
+        'date': date,  # дата строкой в формате dd.mm.YYYY
+        'filter_Person_F': '',
+        'filter_Person_I': '',
+        'filter_Person_O': '',
+        'filter_PSNumCard': '',
+        'filter_Person_BirthDay': '',
+        'filter_MedStaffFact_id': '',
+        'MedService_id': '0',
+        'node': 'root',
+    }
+
+    response = connect.post('https://ecp38.is-mis.ru/', params=params, headers=headers, data=data).json()
+    return response
+
+
+def set_treating_doctor(
+        connect,
+        evn_section_id: str,
+        person_id: str,
+        person_evn_id: str,
+        server_id: str,
+        med_personal_id: str,
+        med_staf_fact_id: str
+):
+    """Назначает лечащего врача"""
+
+    headers = {
+        'accept': '*/*',
+        'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'dnt': '1',
+        'origin': 'https://ecp38.is-mis.ru',
+        'priority': 'u=1, i',
+        'referer': 'https://ecp38.is-mis.ru/?c=promed',
+        'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+    }
+
+    params = {
+        'c': 'EvnSection',
+        'm': 'setEvnSectionMedPersonal',
+    }
+
+    data = {
+        'LpuSection_id': '380101000015688',  # id травматологии
+        'EvnSection_id': evn_section_id,
+        'Person_id': person_id,
+        'PersonEvn_id': person_evn_id,
+        'Server_id': server_id,
+        'MedPersonal_id': med_personal_id,  # назначаемого врача
+        'MedStaffFact_id': med_staf_fact_id,  # назначаемого врача
+    }
+
+    response = connect.post('https://ecp38.is-mis.ru/', params=params, headers=headers, data=data).json()
+    return response
+
+
+def update_evn_template(connect, template_id, chapter: str, text: str):
+    """Заполняет поле рекомендации в выписке"""
+
+    headers = {
+        'authority': 'ecp38.is-mis.ru',
+        'accept': '*/*',
+        'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'dnt': '1',
+        'origin': 'https://ecp38.is-mis.ru',
+        'referer': 'https://ecp38.is-mis.ru/?c=promed',
+        'sec-ch-ua': '"Chromium";v="118", "Google Chrome";v="118", "Not=A?Brand";v="99"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest',
+    }
+
+    params = {
+        'c': 'EvnXml',
+        'm': 'updateContent',
+    }
+
+    data = {
+        'EvnXml_id': f'{template_id}',
+        'name': chapter,
+        'value': text,
+        'isHTML': '1',
+    }
+
+    response = connect.post('https://ecp38.is-mis.ru/', params=params, headers=headers, data=data)
+    return response.status_code
