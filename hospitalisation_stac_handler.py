@@ -11,7 +11,7 @@ router = Router()
 
 
 @router.message(Command(commands=['hospitalize']))
-async def hospitalize(message: Message):
+async def hospitalize():
     session = requests.Session()  # создание сессии подключения
     session.proxies.update(proxies)
     working_with_stories(session)

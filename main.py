@@ -10,14 +10,14 @@ import hospitalisation_stac_handler
 import loading_TP_handler
 import loading_stac_handler
 import schedule_handler
-from schedule_handler import start_scheduler
 import start_menu_handler
 from middleware import AllowedUserMiddleware
 from settings import TOKEN, PROXY_URL
 
 
 async def scheduler():
-    aioschedule.every().day.at('23:45').do(start_scheduler)
+    aioschedule.every().day.at('23:45').do(schedule_handler.start_scheduler)
+    aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.hospitalize)
 
     while True:
         await aioschedule.run_pending()
