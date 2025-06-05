@@ -15,6 +15,10 @@ from middleware import AllowedUserMiddleware
 from settings import TOKEN, PROXY_URL
 
 
+session = AiohttpSession(proxy=PROXY_URL)
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=session)
+
+
 async def scheduler():
     aioschedule.every().day.at('23:45').do(schedule_handler.start_scheduler)
     aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.hospitalize)
@@ -34,9 +38,8 @@ async def main():
         schedule_handler.router,
         hospitalisation_stac_handler.router
     )
-    session = AiohttpSession(proxy=PROXY_URL)
+
     asyncio.create_task(scheduler())
-    bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=session)
     # bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

@@ -1,10 +1,9 @@
 import requests
 from aiogram import Router
 from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
 
-from settings import proxies
+from main import bot
+from settings import proxies, admin
 from utils.ECP.stationar_v2 import working_with_stories
 
 router = Router()
@@ -14,5 +13,8 @@ router = Router()
 async def hospitalize():
     session = requests.Session()  # создание сессии подключения
     session.proxies.update(proxies)
-    working_with_stories(session)
+    try:
+        working_with_stories(session)
+    except Exception as error:
+        await bot.send_message(chat_id=admin, text=error)
     session.close()
