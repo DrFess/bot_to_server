@@ -4,7 +4,7 @@ import json
 from settings import proxies, login_l2, password_l2, path_to_doctorsJson, path_to_empoyeesJson, login, password
 from utils.ECP.add_operation import get_info_code_operation, save_all_oper_info, add_operation_member, \
     save_oper_anesthesia, create_empty_oper, update_oper
-from utils.ECP.classes import PatientECP
+from utils.ECP.classes_ECP import CurrentPatientECP
 from utils.ECP.single_digital_platform import entry, get_all_patients_stac, search_patient, get_evn_number, save_EVN, \
     save_implant_type_link, set_treating_doctor, mkb, get_KSG_KOEF, save_data, create_template, update_evn_template
 from utils.L2.parse_l2 import authorization_l2, get_all_patients_in_ward, get_patient_fio_birthday_L2, \
@@ -24,7 +24,7 @@ def working_with_stories(connect):
 
     for patient in patients_in_ecp_request:
         if patient.get('LpuSection_id') == '380101000015688':
-            patient_ecp = PatientECP(
+            patient_ecp = CurrentPatientECP(
                 connect=connect,
                 person_evn_id=patient.get('PersonEvn_id'),
                 person_id=patient.get('Person_id'),
