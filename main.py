@@ -17,11 +17,13 @@ from settings import TOKEN, PROXY_URL
 
 session = AiohttpSession(proxy=PROXY_URL)
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=session)
+# bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'))  # для запуска на ноуте
 
 
 async def scheduler():
     aioschedule.every().day.at('23:45').do(schedule_handler.start_scheduler)
     aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.hospitalize)
+    aioschedule.every().day.at('23:55').do(hospitalisation_stac_handler.hospitalize_new)
 
     while True:
         await aioschedule.run_pending()
@@ -40,7 +42,6 @@ async def main():
     )
 
     asyncio.create_task(scheduler())
-    # bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
