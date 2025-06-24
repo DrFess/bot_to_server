@@ -40,7 +40,7 @@ def add_patients_in_ecp(connect: Session):
         ) for patient in patients_in_ecp_request if patient.get('LpuSection_id') == '380101000015688')  # генератор перечень пациентов в ЕЦП
 
     fio_list = [patient_ecp.person_fio for patient_ecp in current_patients_ecp]
-    # birthday_list = [patient_ecp.person_birthday for patient_ecp in current_patients_ecp]
+
     for item_l2 in current_patients_l2:
         if item_l2.fio not in list(fio_list):
             name = item_l2.fio.split(' ')[1]
@@ -98,10 +98,3 @@ def add_patients_in_ecp(connect: Session):
             print(f'{item_l2.fio} уже в ЕЦП')
 
     return current_patients_l2, current_patients_ecp
-
-
-session = Session()
-
-add_patients_in_ecp(session)
-
-session.close()

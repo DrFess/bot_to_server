@@ -405,7 +405,6 @@ class HistoryEcp(PatientECP):
                                       params=params,
                                       headers=self._headers_ecp,
                                       data=data)
-        pprint(response.json())
         return response.json()
 
 
