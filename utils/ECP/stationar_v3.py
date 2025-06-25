@@ -1,10 +1,12 @@
 import json
 from datetime import datetime
 from pprint import pprint
+from typing import Iterator
 
 from requests import Session
 
-from settings import login_l2, password_l2, login, password, path_to_hospitalsJson
+from settings import login_l2, password_l2, login, password, path_to_hospitalsJson, path_to_doctorsJson, \
+    path_to_empoyeesJson
 from utils.ECP.classes_ECP import CurrentPatientECP, HistoryEcp
 from utils.ECP.single_digital_platform import get_all_patients_stac, entry
 from utils.L2.classes_L2 import HistoryL2
@@ -12,7 +14,8 @@ from utils.L2.diaries import authorization_l2
 from utils.L2.parse_l2 import get_all_patients_in_ward
 
 
-def add_patients_in_ecp(connect: Session):
+def get_current_patients_l2_ecp(connect: Session) -> tuple:
+    """Получает списки текущих пациентов L2 и ЕЦП"""
     authorization_l2(connect, login=login_l2, password=password_l2)
     patients_number = get_all_patients_in_ward('C3:C40')  # 'C3:C40'
     patients_number.extend(get_all_patients_in_ward('K3:K40'))
@@ -37,11 +40,18 @@ def add_patients_in_ecp(connect: Session):
             evn_ps_id=patient.get('EvnPS_id'),
             server_id=patient.get('Server_id'),
             ksg=patient.get('EvnSection_KSG')
-        ) for patient in patients_in_ecp_request if patient.get('LpuSection_id') == '380101000015688')  # генератор перечень пациентов в ЕЦП
+        ) for patient in patients_in_ecp_request if patient.get('LpuSection_id') == '380101000015688')
 
-    fio_list = [patient_ecp.person_fio for patient_ecp in current_patients_ecp]
+    return current_patients_l2, current_patients_ecp
 
-    for item_l2 in current_patients_l2:
+
+def add_patients_in_ecp(connect: Session) -> None:
+    """Создаёт случай госпитализации, если пациента нет в госпитализированных"""
+    current_patients = get_current_patients_l2_ecp(connect)
+
+    fio_list = [patient_ecp.person_fio for patient_ecp in current_patients[1]]
+
+    for item_l2 in current_patients[0]:
         if item_l2.fio not in list(fio_list):
             name = item_l2.fio.split(' ')[1]
             surname = item_l2.fio.split(' ')[0]
@@ -97,4 +107,127 @@ def add_patients_in_ecp(connect: Session):
         else:
             print(f'{item_l2.fio} уже в ЕЦП')
 
-    return current_patients_l2, current_patients_ecp
+
+def add_operation(connect: Session):
+    """Добавляет услугу операции"""
+
+    current_patients = get_current_patients_l2_ecp(connect)
+
+    ecp_fio_dict = {patient_ecp.person_fio: (patient_ecp.ksg, patient_ecp)
+                    for patient_ecp in current_patients[1]}
+
+    for item in current_patients[0]:
+        if item.operation:
+            if len(item.operation) == 1:
+                if not ecp_fio_dict.get(item.fio)[0]:
+                    oper_date = '.'.join(item.operation.get(0).get('Дата проведения').split('-')[::-1])
+
+                    oper_code = item.operation.get(0).get('Код операции').split(' ')[0].rstrip('.').lstrip('A').lstrip('А')
+
+                    current_patient_ecp = ecp_fio_dict.get(item.fio)[1]
+                    current_oper_code = current_patient_ecp.get_operation_code(code=oper_code, oper_date=oper_date)
+
+                    with open(path_to_doctorsJson, 'r') as file:  # список словарей с данными врачей
+                        doctors = json.load(file)
+
+                    who_operate = item.operation.get(0).get('Оперировал').split(' ')[0]
+                    who_operate_med_personal_id = doctors.get(who_operate).get('MedPersonal_id')
+                    who_operate_med_staf_fact_id = doctors.get(who_operate).get('MedStaffFact_id')
+
+                    start_date = item.operation.get(0).get('Дата проведения')
+                    start_time = item.operation.get(0).get('Время начала')
+                    end_date = item.operation.get(0).get('Дата окончания')
+                    end_time = item.operation.get(0).get('Время окончания')
+                    first_save = current_patient_ecp.save_oper_info(
+                        medPersonal_id=who_operate_med_personal_id,
+                        start_date=start_date,
+                        start_time=start_time,
+                        end_date=end_date,
+                        end_time=end_time,
+                        medStaffFact_id=who_operate_med_staf_fact_id,
+                        oper_code=current_oper_code[0].get('UslugaComplex_id'),
+                    )
+
+                    oper_id = first_save.get('EvnUslugaOper_id')  # возвращает EvnUslugaOper_id == EvnUslugaOperBrig_pid
+
+                    current_patient_ecp.add_operation_member(
+                        medPersonal_id=who_operate_med_personal_id,
+                        start_date=start_date,
+                        evn_usluga_oper_id=oper_id,
+                        medStaffFact_id=who_operate_med_staf_fact_id,
+                        surgType_id='1'
+                    )
+
+                    anesthetist = item.operation.get(0).get('Анестезиолог')
+                    with open(path_to_empoyeesJson, 'r') as file:
+                        doctors_list = json.load(file)
+                    for doctor in doctors_list:
+                        if anesthetist == doctor.get('MedPersonal_Fin') and doctor.get(
+                                'WorkData_MedStaff_endDate') is None:
+                            anesthesiolog_med_personal_id = doctor.get('MedPersonal_id')
+                            anesthesiolog_staf_fact_id = doctor.get('MedStaffFact_id')
+                            current_patient_ecp.add_operation_member(
+                                medPersonal_id=anesthesiolog_med_personal_id,
+                                start_date=start_date,
+                                evn_usluga_oper_id=oper_id,
+                                medStaffFact_id=anesthesiolog_staf_fact_id,
+                                surgType_id='4'
+                            )
+                            break
+
+                    if item.operation.get(0).get('Метод обезболивания') == 'ЭТН':
+                        anesthesia_class_id = '4'
+                    elif item.operation.get(0).get('Метод обезболивания') == 'АМН':
+                        anesthesia_class_id = '5'
+                    else:
+                        anesthesia_class_id = '21'
+
+                    current_patient_ecp.save_oper_anesthesia(
+                        evn_usluga_oper_anest_id=oper_id,
+                        anesthesiaClass_id=anesthesia_class_id
+                    )
+
+                    operation_template = current_patient_ecp.create_empty_oper(
+                        evn_id=oper_id,
+                        medStaffFact_id=who_operate_med_staf_fact_id
+                    )
+
+                    protocol_text = item.operation.get(0).get('Ход операции')
+                    current_patient_ecp.update_oper(
+                        evn_xml_id=operation_template.get('EvnXml_id'),
+                        text=protocol_text
+                    )
+
+                    title_operation = item.operation.get(0).get('Название операции')
+                    if 'удаление' not in title_operation.lower():
+                        if 'спиц' in protocol_text or 'стержень' in protocol_text or 'TEN' in protocol_text:
+                            implant_id = '856'  # стержень
+                            implant_title = 'Стержень костный ортопедический, нерассасывающийся'
+                        elif 'винт' in protocol_text:
+                            implant_id = '857'  # винт
+                            implant_title = 'Винт костный ортопедический, нерассасывающийся, стерильный'
+                        elif 'пластин' in protocol_text:
+                            implant_id = '859'  # пластина
+                            implant_title = 'Пластина накостная для фиксации переломов винтами, нерассасывающаяся, стерильная'
+                        elif 'фиксатор' in protocol_text or 'пуговиц' in protocol_text:
+                            implant_id = '846'
+                            implant_title = 'Фиксатор связок'
+                        elif 'серкляж' in protocol_text:
+                            implant_id = '930'  # нить
+                            implant_title = 'Нить хирургическая из поли(L-лактид-ко-капролактона)'
+                        else:
+                            implant_id = None
+                            implant_title = None
+
+                        if implant_id is not None and implant_title is not None:
+                            current_patient_ecp.save_implant_type_link(
+                                evn_usluga_oper_id=oper_id,
+                                implant_id=implant_id,
+                                implant_name=implant_title
+                            )
+                    print(f'Done! Operation to {item.fio} added')
+
+
+# session = Session()
+# add_operation(session)
+# session.close()

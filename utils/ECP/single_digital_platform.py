@@ -2,6 +2,8 @@ from datetime import datetime
 
 from fake_useragent import FakeUserAgent
 
+from settings import LPU_SECTION_ID_TRAUMA
+
 
 def calculate_date(start_date: str, end_date: str) -> int:
     s_date = datetime.strptime(start_date, '%d.%m.%Y')
@@ -1250,9 +1252,9 @@ def get_all_patients_stac(connect, date: str):
     data = {
         'object': 'LpuSection',
         'object_id': 'LpuSection_id',
-        'object_value': '380101000015688',
+        'object_value': LPU_SECTION_ID_TRAUMA,
         'level': '0',
-        'LpuSection_id': '380101000015688',
+        'LpuSection_id': LPU_SECTION_ID_TRAUMA,
         'ARMType': 'stac',
         'date': date,  # дата строкой в формате dd.mm.YYYY
         'filter_Person_F': '',
