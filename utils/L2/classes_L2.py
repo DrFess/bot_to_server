@@ -583,3 +583,4 @@ class HistoryL2:
             return finally_examination_info
         else:
             return False
+
