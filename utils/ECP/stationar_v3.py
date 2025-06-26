@@ -228,6 +228,45 @@ def add_operation(connect: Session):
                     print(f'Done! Operation to {item.fio} added')
 
 
+def discharge_patient(connect: Session):
+    """Выписывает пациентов"""
+    authorization_l2(connect, login=login_l2, password=password_l2)
+    patients_number = get_all_patients_in_ward('P3:P40')
+
+    current_patients_l2 = [
+        HistoryL2(
+            connect=connect,
+            number=int(history_number)
+        ) for history_number in patients_number if history_number.isdigit()]  # генератор перечень пациентов в L2
+
+    day_today = datetime.today().strftime('%d.%m.%Y')
+    entry(connect, login=login, password=password)
+    patients_in_ecp_request = get_all_patients_stac(connect, day_today)
+
+    current_patients_ecp = (
+        CurrentPatientECP(
+            connect=connect,
+            person_evn_id=patient.get('PersonEvn_id'),
+            person_id=patient.get('Person_id'),
+            medpersonal_id=patient.get('MedPersonal_id'),
+            evn_section_id=patient.get('EvnSection_id'),
+            evn_ps_id=patient.get('EvnPS_id'),
+            server_id=patient.get('Server_id'),
+            ksg=patient.get('EvnSection_KSG')
+        ) for patient in patients_in_ecp_request if patient.get('LpuSection_id') == '380101000015688')
+
+    for patient in current_patients_l2:
+        pprint(patient.finally_examination)
+        treatment_doctor = patient.finally_examination.get('Лечащий врач')
+        doctor_surname = treatment_doctor.split(' ')[0]
+        with open(path_to_doctorsJson, 'r') as file:  # список словарей с данными врачей
+            doctors = json.load(file)
+        med_personal_id = doctors.get(doctor_surname).get(
+            'MedPersonal_id')  # получаем персональное id по фамилии лечащего врача из data
+        med_staff_fact_id = doctors.get(doctor_surname).get(
+            'MedStaffFact_id_stac')
+
+
 # session = Session()
-# add_operation(session)
+# discharge_patient(session)
 # session.close()

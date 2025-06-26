@@ -568,7 +568,7 @@ class HistoryL2:
                     for item in group.get('fields'):
                         key = item.get('title')
                         value = item.get('value')
-                        if item.get('pk') in (1978, 1988) or key in ('Режим иммобилизации',
+                        if item.get('pk') in (1978, ) or key in ('Режим иммобилизации',
                                                                      'Уход за послеоперационной раной',
                                                                      'Физиолечение',
                                                                      'Медикаментозное лечение',
@@ -577,6 +577,8 @@ class HistoryL2:
                                                                      'Лечащий врач',
                                                                      'Заведующий отделением'):
                             finally_examination_info[key] = value
+                        elif item.get('pk') in (1988, ):
+                            finally_examination_info['Рекомендации по рентгену'] = value
 
             return finally_examination_info
         else:
