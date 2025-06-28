@@ -22,7 +22,7 @@ bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=
 
 async def scheduler():
     aioschedule.every().day.at('23:45').do(schedule_handler.start_scheduler)
-    aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.hospitalize)
+    # aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.hospitalize)
     aioschedule.every().day.at('21:00').do(hospitalisation_stac_handler.hospitalize_new)
     aioschedule.every().day.at('08:00').do(hospitalisation_stac_handler.hospitalize_new)
     aioschedule.every().day.at('09:30').do(hospitalisation_stac_handler.operation_update)
