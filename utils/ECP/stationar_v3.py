@@ -1,12 +1,11 @@
 import json
 from datetime import datetime
 from pprint import pprint
-from typing import Iterator
 
 from requests import Session
 
 from settings import login_l2, password_l2, login, password, path_to_hospitalsJson, path_to_doctorsJson, \
-    path_to_empoyeesJson
+    path_to_empoyeesJson, path_to_mkb_code
 from utils.ECP.classes_ECP import CurrentPatientECP, HistoryEcp
 from utils.ECP.single_digital_platform import get_all_patients_stac, entry
 from utils.L2.classes_L2 import HistoryL2
@@ -233,7 +232,7 @@ def discharge_patient(connect: Session):
     authorization_l2(connect, login=login_l2, password=password_l2)
     patients_number = get_all_patients_in_ward('P3:P40')
 
-    current_patients_l2 = [
+    current_discharged_patients_l2 = [
         HistoryL2(
             connect=connect,
             number=int(history_number)
@@ -255,16 +254,82 @@ def discharge_patient(connect: Session):
             ksg=patient.get('EvnSection_KSG')
         ) for patient in patients_in_ecp_request if patient.get('LpuSection_id') == '380101000015688')
 
-    for patient in current_patients_l2:
-        pprint(patient.finally_examination)
-        treatment_doctor = patient.finally_examination.get('Лечащий врач')
-        doctor_surname = treatment_doctor.split(' ')[0]
-        with open(path_to_doctorsJson, 'r') as file:  # список словарей с данными врачей
-            doctors = json.load(file)
-        med_personal_id = doctors.get(doctor_surname).get(
-            'MedPersonal_id')  # получаем персональное id по фамилии лечащего врача из data
-        med_staff_fact_id = doctors.get(doctor_surname).get(
-            'MedStaffFact_id_stac')
+    ecp_fio_dict = {patient_ecp.person_fio: patient_ecp
+                    for patient_ecp in current_patients_ecp}
+
+    with open(path_to_mkb_code, 'r') as file:
+        diagnosis_info = json.load(file)
+
+    for patient in current_discharged_patients_l2:
+        if patient.finally_examination:
+            if patient.fio in list(ecp_fio_dict.keys()):
+                treatment_doctor = patient.finally_examination.get('Лечащий врач')
+                doctor_surname = treatment_doctor.split(' ')[0]
+                with open(path_to_doctorsJson, 'r') as file:  # список словарей с данными врачей
+                    doctors = json.load(file)
+                med_personal_id = doctors.get(doctor_surname).get(
+                    'MedPersonal_id')  # получаем персональное id по фамилии лечащего врача из data
+                med_staff_fact_id = doctors.get(doctor_surname).get(
+                    'MedStaffFact_id_stac')
+                current_ecp_patient = ecp_fio_dict.get(patient.fio)
+                current_ecp_patient.set_treating_doctor(
+                    med_personal_id=med_personal_id,
+                    med_staf_fact_id=med_staff_fact_id
+                )
+                print(f'У пациента {patient.fio} сменен лечащий врач на {doctor_surname}')
+
+                diagnosis_id = ''
+                for diagnosis in diagnosis_info:
+
+                    if diagnosis.get('Diag_Code') in patient.finally_examination.get('Основной диагноз по МКБ'):
+                        diagnosis_id = diagnosis.get('Diag_id')  # .get('Diag_id')
+
+                ksg_koeff = current_ecp_patient.get_KSG_KOEF(
+                    date_start=patient.first_examination.get('Дата поступления'),
+                    date_end=patient.finally_examination.get('Дата выписки'),
+                    diagnosis_id=diagnosis_id
+                )
+
+                current_ecp_patient.save_data(
+                    date_start=patient.first_examination.get('Дата поступления'),
+                    date_end=patient.finally_examination.get('Дата выписки'),
+                    koiko_dni=patient.finally_examination.get('Проведено койко-дней'),
+                    ksg_val=ksg_koeff.get('KSG'),
+                    ksg_mes_tid=ksg_koeff.get('Mes_tid'),
+                    ksg_mestarif_id=ksg_koeff.get('MesTariff_id'),
+                    ksg_mes_old_usluga_complex_id=ksg_koeff.get('MesOldUslugaComplex_id'),
+                    time_start=patient.first_examination.get('Время поступления'),
+                    time_end=patient.finally_examination.get('Время выписки'),
+                    ksg_coeff=ksg_koeff.get('KOEF'),
+                    diag_id=diagnosis_id,
+                    med_staff_fact_id=med_staff_fact_id,
+                    med_personal_id=med_personal_id
+                )
+
+                template = current_ecp_patient.create_template(med_staff_fact_id=med_staff_fact_id)
+
+                current_ecp_patient.update_evn_template(
+                    template_id=template.get('EvnXml_id'),
+                    chapter='Condition',
+                    text=f'{patient.finally_examination.get("жалобы при поступлении")}'
+                         f'\n{patient.finally_examination.get("анамнез заболевания")}'
+                         f'\n{patient.finally_examination.get("осмотр(поступление)")}'
+                )
+
+                current_ecp_patient.update_evn_template(
+                    template_id=template.get('EvnXml_id'),
+                    chapter='recommendations',
+                    text=f'{patient.finally_examination.get("Наблюдение специалистов на амбулаторном этапе (явка на осмотр специалистов не позднее 7 дней после выписки из стационара в поликлинику по месту жительства)")}\n'
+                         f'{patient.finally_examination.get("Ограничение физических нагрузок", "")}\n'
+                         f'{patient.finally_examination.get("Режим иммобилизации", "")}\n'
+                         f'{patient.finally_examination.get("Рекомендации по рентгену", "")}\n'
+                         f'{patient.finally_examination.get("Реабилитация", "")}\n'
+                         f'{patient.finally_examination.get("Уход за послеоперационной раной", "")}'
+                )
+                print(f'Пациента {patient.fio} выписан')
+
+        else:
+            print(f'Проверь выписку {patient.fio}')
 
 
 # session = Session()

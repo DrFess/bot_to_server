@@ -5,7 +5,7 @@ from aiogram.filters import Command
 from main import bot
 from settings import proxies, admin
 from utils.ECP.stationar_v2 import working_with_stories
-from utils.ECP.stationar_v3 import add_patients_in_ecp, add_operation
+from utils.ECP.stationar_v3 import add_patients_in_ecp, add_operation, discharge_patient
 
 router = Router()
 
@@ -34,4 +34,12 @@ async def operation_update():
     session = requests.Session()
     session.proxies.update(proxies)
     add_operation(session)
+    session.close()
+
+
+@router.message(Command(commands=['extract']))
+async def extract_patients():
+    session = requests.Session()
+    session.proxies.update(proxies)
+    discharge_patient(session)
     session.close()

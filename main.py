@@ -27,6 +27,8 @@ async def scheduler():
     aioschedule.every().day.at('08:00').do(hospitalisation_stac_handler.hospitalize_new)
     aioschedule.every().day.at('09:30').do(hospitalisation_stac_handler.operation_update)
     aioschedule.every().day.at('21:30').do(hospitalisation_stac_handler.operation_update)
+    aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.discharge_patient)
+    aioschedule.every().day.at('22:00').do(hospitalisation_stac_handler.discharge_patient)
 
     while True:
         await aioschedule.run_pending()

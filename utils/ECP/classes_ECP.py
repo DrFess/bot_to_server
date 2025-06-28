@@ -271,6 +271,427 @@ class CurrentPatientECP:
         response = self._connect.post('https://ecp38.is-mis.ru/', params=params, headers=self._headers, data=data)
         return response.json()
 
+    def set_treating_doctor(
+            self,
+            med_personal_id: str,
+            med_staf_fact_id: str
+    ):
+        """Назначает лечащего врача"""
+
+        params = {
+            'c': 'EvnSection',
+            'm': 'setEvnSectionMedPersonal',
+        }
+
+        data = {
+            'LpuSection_id': LPU_SECTION_ID_TRAUMA,  # id травматологии
+            'EvnSection_id': self.evn_section_id,
+            'Person_id': self.person_id,
+            'PersonEvn_id': self.person_evn_id,
+            'Server_id': self.server_id,
+            'MedPersonal_id': med_personal_id,  # назначаемого врача
+            'MedStaffFact_id': med_staf_fact_id,  # назначаемого врача
+        }
+
+        response = self._connect.post('https://ecp38.is-mis.ru/', params=params, headers=self._headers, data=data).json()
+        return response
+
+    def get_mkb_code(self, letter: str):
+        """Все коды МКБ по литере"""
+
+        params_mkb = {
+            'c': 'MongoDBWork',
+            'm': 'getData',
+            'object': 'Diag',
+        }
+
+        data_mkb = f"where=where%20(Diaglevel_id%20%3D%204%20)%20and%20Diag_Code%20like%20'{letter}%25'%20and%20(Diag_begDate%20is%20null%20or%20Diag_begDate%20%3C%3D%20'2023-10-23')%20and%20(Diag_endDate%20is%20null%20or%20Diag_endDate%20%3E%3D%20'2023-10-23')%20&Diag_id=&Diag_pid=&DiagLevel_id=&Diag_Code=&Diag_Name=&Diag_begDate=&Diag_endDate=&PersonAgeGroup_Code=&Sex_Code=&DiagFinance_IsOms=&DiagFinance_IsAlien=&DiagFinance_IsFacult=&DiagFinance_IsHealthCenter=&DiagFinance_IsRankin=&PersonRegisterType_List=&MorbusType_List=&DeathDiag_IsLowChance=&Diag_IsPairedOrgans=&DiagRRS=&VimisDiag_id=&VimisType_id=&VimisDiag_group=&remove=&intersection=&object=Diag"
+
+        response = self._connect.post('https://ecp38.is-mis.ru/', params=params_mkb, headers=self._headers, data=data_mkb)
+        return response.json()
+
+    def get_KSG_KOEF(self, date_start: str, date_end: str, diagnosis_id: str):
+        """Запрос на получение КСГ и коэффициента"""
+
+        params = {
+            'c': 'EvnSection',
+            'm': 'loadKSGKPGKOEF',
+        }
+
+        data = {
+            'EvnSection_setDate': f'{date_start}',
+            'EvnSection_disDate': f'{date_end}',
+            'Person_id': self.person_id,
+            'EvnSection_id': '0',
+            'PayType_id': '380101000000021',
+            'Diag_id': diagnosis_id,
+            'HTMedicalCareClass_id': '',
+            'EvnSection_IndexRep': '',
+            'EvnSection_IndexRepInReg': '',
+            'EvnSection_pid': '',
+            'LpuSection_id': '380101000015688',
+            'LpuSectionBedProfile_id': '380101000000332',
+            'LpuSectionProfile_id': '380101000000301',
+            'LpuUnitType_id': '1',
+            'DrugTherapyScheme_ids': '',
+            'MesDop_ids': '',
+            'RehabScale_id': '',
+            'CureResult_id': '',
+            'EvnSection_SofaScalePoints': '',
+            'EvnSection_IsAdultEscort': '1',
+            'EvnSection_Absence': '',
+        }
+
+        response = self._connect.post('https://ecp38.is-mis.ru/', params=params, headers=self._headers, data=data)
+        return response.json()
+
+    def save_data(
+            self,
+            date_start: str,
+            date_end: str,
+            koiko_dni: str,
+            ksg_val: str,
+            ksg_mes_tid: str,
+            ksg_mestarif_id: str,
+            ksg_mes_old_usluga_complex_id: str,
+            time_start: str,
+            time_end: str,
+            ksg_coeff: str,
+            diag_id,
+            med_staff_fact_id: str,
+            med_personal_id: str
+    ):
+        """Сохраняет данные выписки и переводит пациенты в выписанных"""
+
+        params = {
+            'c': 'EvnSection',
+            'm': 'saveEvnSection',
+        }
+
+        data = [
+            ('checkIsOMS', '1'),
+            ('DrugTherapyScheme_ids', ''),
+            ('MesDop_ids', ''),
+            ('AdditionalFields', '{"4":1}'),
+            ('AdditionalHospitalizationResultFields', ''),
+            ('AdditionalHospitalizationResultCardiologyFields', ''),
+            ('AdditionalNewbornResultFields', ''),
+            ('AdditionalNeurologyFields', ''),
+            ('AdditionalCardiologyFields', ''),
+            ('NatureOfCurrent', '{}'),
+            ('EvnSection_disDate', date_start),
+            ('EvnSection_setDate', date_end),
+            ('silentSave', '0'),
+            ('isAutoCreate', '0'),
+            ('editAnatom', '1'),
+            ('vizit_direction_control_check', '0'),
+            ('ignoreDiagKSGCheck', '0'),
+            ('ignoreEDiagProfilesCheck', '0'),
+            ('ignoreParentEvnDateCheck', '0'),
+            ('ignoreEvnPSDoublesCheck', '1'),
+            ('ignoreCheckEvnUslugaChange', '0'),
+            ('ignoreCheckEvnUslugaDates', '0'),
+            ('ignoreCheckKSGisEmpty', '0'),
+            ('ignoreCheckCardioFieldsEmpty', '0'),
+            ('ignoreCheckTimePainFieldsEmpty', '0'),
+            ('ignoreCheckPointsGraceFieldsEmpty', '0'),
+            ('skipPersonRegisterSearch', '0'),
+            ('ignoreEvnUslugaHirurgKSGCheck', '0'),
+            ('ignoreCheckTNM', '0'),
+            ('ignoreCheckMorbusOnko', '0'),
+            ('ignoreMorbusOnkoDrugCheck', '0'),
+            ('ignoreCheckConciliumOnko', '0'),
+            ('ignoreFirstDisableCheck', '0'),
+            ('ignoreDocumentsCheck', '1'),
+            ('ignorePersonAgeByMedSpecCheck', '0'),
+            ('ignoreDiagSmallChild', '0'),
+            ('ignoreFillnessKSG', '0'),
+            ('ignoreCovidDrugTherapyEmpty', '0'),
+            ('ignoreCovidDrugTherapyDiffs', '0'),
+            ('ignoreMorbusKasByInternalTransfer', '0'),
+            ('ignoreMorbusKasByTransferOut', '0'),
+            ('EvnSection_KoikoDni', koiko_dni),
+            ('ignoreControlPayTypeUslAndEvnSection', '0'),
+            ('ignoreControlDatePrescrAndDirectionToEvnSection', '0'),
+            ('ignoreDiagValidityType', '0'),
+            ('ignoreControlOMS', '0'),
+            ('ignoreCheckEvnUslugaInESOMS', '0'),
+            ('KSG_val', f'{ksg_val}'),
+            ('LeaveType_SysNick', 'ksleave'),
+            ('Mes_tid', f'{ksg_mes_tid}'),
+            ('PrehospTrauma_id', ''),
+            ('Mes_kid', ''),
+            ('MesTariff_id', f'{ksg_mestarif_id}'),
+            ('MesTariff_sid', ''),
+            ('accessType', 'edit'),
+            ('Evn_Name', ''),
+            ('EvnDiagPS_id', '0'),
+            ('EvnDie_id', '0'),
+            ('EvnLeave_id', '0'),
+            ('EvnOtherLpu_id', '0'),
+            ('EvnOtherSection_id', '0'),
+            ('EvnOtherSectionBedProfile_id', '0'),
+            ('EvnSection_Index', '-1'),
+            ('EvnOtherStac_id', '0'),
+            ('EvnSection_id', self.evn_section_id),
+            ('EvnSection_pid', self.evn_ps_id),
+            ('EvnSection_IsPaid', ''),
+            ('EvnSection_IndexRep', ''),
+            ('EvnSection_IndexRepInReg', ''),
+            ('MedPersonal_aid', '0'),
+            ('MedPersonal_did', '0'),
+            ('MedPersonal_id', med_personal_id),
+            ('Person_id', self.person_id),
+            ('PersonEvn_id', self.person_evn_id),
+            ('Server_id', self.server_id),
+            ('EvnSection_IsCardioCheck', '0'),
+            ('MesOldUslugaComplex_id', f'{ksg_mes_old_usluga_complex_id}'),
+            ('LpuSectionBedProfile_id', ''),
+            ('EvnSection_IsZNO', '1'),
+            ('EvnSection_IsZNORemove', ''),
+            ('EvnSection_IsMultiKSG', ''),
+            ('TalonHTM_id', ''),
+            ('EvnDirectionHTM_id', ''),
+            ('TalonHTM_IsSigned', ''),
+            ('EvnDirectionHTM_begDate', ''),
+            ('EvnDiagPS_setDT', ''),
+            ('EvnSection_setDate', date_start),
+            ('EvnSection_disDate', date_end),
+            ('EvnSection_setTime', time_start),
+            ('EvnSection_disTime', time_end),
+            ('EvnSection_IsAdultEscort', '1'),  # const
+            ('EvnSection_IsMedReason', '1'),  # проверить не индекс ли заключительного диагноза, если да -> const
+            ('EvnSection_AdultEscortPeriod', ''),
+            ('LpuSection_id', LPU_SECTION_ID_TRAUMA),  # Травматологии и ортопедии
+            ('LpuSectionTransType_id', ''),
+            ('EvnSection_IsMeal', '1'),  # const
+            ('LpuSectionProfile_id', '380101000000301'),  # id профиля Травматологии и ортопедии
+            ('LpuSectionBedProfileLink_fedid', '380101000000438'),  # id профиля койки
+            ('LpuSectionWard_id', ''),
+            ('Bed_id', ''),
+            ('NewLpuSectionBedProfile_id', ''),
+            ('BedFund_setDate', ''),
+            ('GetRoom_id', ''),
+            ('GetBed_id', ''),
+            ('EvnSection_insideNumCard', ''),
+            ('PayType_id', '380101000000021'),  # "ОМС" скорее всего const
+            ('PayContract_id', ''),
+            ('PolisDMS_id', ''),
+            ('TariffClass_id', ''),
+            ('MedStaffFact_id', med_staff_fact_id),
+            ('Diag_id', diag_id),
+            ('HeartFailureStage_54', ''),
+            ('HeartFailureClass_55', ''),
+            ('StenocardiaFuncClass_id', ''),
+            ('PulmonaryHypertensionFuncClass_id', ''),
+            ('DiagValidityType_id', '3'),  # "Заключительный клинический диагноз" const
+            ('DiagSetPhase_id', '2'),  # "Средней тяжести" состояние при поступлении const ("удовлетворительное" - 1)
+            ('EvnSection_PhaseDescr', ''),
+            ('Diag_cid', ''),
+            ('DeseaseBegTimeType_id', ''),
+            ('YesNo_148', ''),
+            ('DeseaseType_id', ''),
+            ('DiseaseCourseType_149', ''),
+            ('DiseaseCourseType_150', ''),
+            ('DiseaseCourseType_151', ''),
+            ('DiseaseCourseType_152', ''),
+            ('DiseaseCourseType_153', ''),
+            ('DiseaseCourseType_154', ''),
+            ('DrugTherapyScheme_id_0', ''),
+            ('RehabScale_id', ''),
+            ('RehabScale_vid', ''),
+            ('EvnSection_SofaScalePoints', ''),
+            ('TumorStage_id', ''),
+            ('Diag_spid', ''),
+            ('EvnSection_BiopsyDate', ''),
+            ('PainIntensity_id', ''),
+            ('MesDop_id_0', ''),
+            ('HTMedicalCare_isAdjacentES', ''),
+            ('HTMedicalCareType_id', ''),
+            ('HTMedicalCareType_Code', ''),
+            ('HTMedicalCareClass_id', ''),
+            ('HTMedicalCareClass_Code', ''),
+            ('HTMedicalCareType_Name', ''),
+            ('HTMedicalCareClass_Name', ''),
+            ('RankinScale_id', ''),
+            ('RankinScale_oid', ''),
+            ('EvnSection_NIHSSAfterTLT', ''),
+            ('EvnSection_NIHSSLeave', ''),
+            ('RankinScale_sid', ''),
+            ('Mes_id', ''),
+            ('Mes_sid', ''),
+            ('StandartExecutionLink_id', ''),
+            ('SurveyStandartExecution_id', ''),
+            ('CureStandartExecution_id', ''),
+            ('Diag_it_id', ''),
+            ('Mes_it_id', ''),
+            ('CerebralSymptoms_102', ''),
+            ('CorticalActivity_103', ''),
+            ('MeningealSyndrome_104', ''),
+            ('Speech_105', ''),
+            ('CranialNerves_106', ''),
+            ('Sensitivity_107', ''),
+            ('SpinalLesion_108', ''),
+            ('PolyneuriticLesion_109', ''),
+            ('MotorSystem_110', ''),
+            ('CoordinationSystem_111', ''),
+            ('ExtrapyramidalSystem_112', ''),
+            ('AutonomicNervousSystem_113', ''),
+            ('PelvicFunctions_114', ''),
+            ('VertebralSyndrome_115', ''),
+            ('IntracerebralHematoma_116', ''),
+            ('tltDateTimeSMP', ''),
+            ('ext-comp-2080', ''),
+            ('ext-comp-2081', ''),
+            ('cardiology_YesNo_119', ''),
+            ('cardiology_StopFibrillationAtrial_120', ''),
+            ('cardiology_StopFibrillationAtrialDT_121Date', ''),
+            ('cardiology_StopFibrillationAtrialDT_121Time', ''),
+            ('EvnSectionEditWindow_OpenMorbusButton', 'Открытые заболевания'),
+            ('UslugaComplex_id', ''),
+            ('EvnSection_Absence', ''),
+            ('Mes_rid', ''),
+            ('MesOldUslugaComplexLink_Number', ''),
+            ('EvnSection_KSG', f'{ksg_val}'),
+            ('EvnSection_KPG', ''),
+            ('EvnSection_KOEF', f'{ksg_coeff}'),
+            ('EvnSection_KPGKOEF', ''),
+            ('EvnSection_CoeffCTP', '0'),
+            ('EvnSection_IsST', ''),
+            ('EvnSection_IsCardShock', ''),
+            ('EvnSection_StartPainHour', ''),
+            ('EvnSection_StartPainMin', ''),
+            ('EvnSection_GraceScalePoints', ''),
+            ('ACSType_id', ''),
+            ('ONMKType_1', ''),
+            ('KillipClass_2', ''),
+            ('InfarctionECGType_3', ''),
+            ('InfarctionAnamnesisType_4', '1'),
+            ('TimeSymptomONMK_5', ''),
+            ('ONMKDescr_42', ''),
+            ('ONMKPeriod_43', ''),
+            ('ONMKReason_44', ''),
+            ('ONMKTreatment_45', ''),
+            ('ClinicalScaleParameter_6', ''),
+            ('ClinicalScaleInterpret_86', ''),
+            ('ClinicalScaleInterpret_7', ''),
+            ('ClinicalScaleInterpret_8', ''),
+            ('ClinicalScaleASPECTS_57', ''),
+            ('LAMS_79', ''),
+            ('HemTransformation_87', ''),
+            ('acs_MyocardialInfarctionType_53', ''),
+            ('stenocardia_ClinicalClassStableIBS_130', ''),
+            ('stenocardia_StenocardiaStressClass_131', ''),
+            ('heartFailure_HeartFailureType_134', ''),
+            ('SystemCoronaryRisk', ''),
+            ('SystemCoronaryRiskInterpretation', ''),
+            ('FibrillationAtrialType_132', ''),
+            ('FibrillationAtrialForm_133', ''),
+            ('AnatomicLocalHematomaONMK_id', ''),
+            ('PregnancyEvnPS_Period', ''),
+            ('EvnSection_BarthelIdx', ''),
+            ('EvnSection_BarthelIdxEnd', ''),
+            ('transplantation_YearTrans_188', ''),
+            ('LeaveTypeFed_id', ''),
+            ('LeaveType_id', '380101000000001'),
+            ('EvnLeave_UKL', '1'),
+            ('ResultDesease_id', '380101000000002'),
+            # улучшение (на конце: выздоровление - 1, без перемен - 3, ухудшение - 4)
+            ('LeaveCause_id', '5'),
+            # планово (самовольный уход - 1, инициатива больного - 2, нарушение режима - 3, эпидпоказания - 4, экстренно - 32)
+            ('EvnLeave_IsAmbul', '1'),  # const
+            ('Org_oid', ''),
+            ('LpuUnitType_oid', ''),
+            ('LpuSection_oid', ''),
+            ('LpuSectionBedProfile_oid', ''),
+            ('LpuSectionBedProfileLink_fedoid', ''),
+            ('MedStaffFact_did', ''),
+            ('EvnDie_IsWait', ''),
+            ('CureResult_id', ''),
+            ('EvnSection_IsTerm', ''),
+            ('EvnDie_IsAnatom', ''),
+            ('EvnDie_expDate', ''),
+            ('EvnDie_expTime', ''),
+            ('AnatomWhere_id', ''),
+            ('Org_aid', ''),
+            ('LpuSection_aid', ''),
+            ('MedStaffFact_aid', ''),
+            ('Diag_aid', ''),
+            ('DiagSetPhase_aid', '1'),
+            ('PrivilegeType_id', ''),
+            ('PayTypeERSB_id', ''),
+            ('EvnSection_PlanDisDT', date_end),
+            ('PrehospWaifRetired_id', ''),
+            ('LeaveType_fedid', ''),
+            ('ResultDeseaseType_fedid', ''),
+            ('CerebralSymptoms_102', ''),
+            ('CorticalActivity_103', ''),
+            ('MeningealSyndrome_104', ''),
+            ('Speech_105', ''),
+            ('CranialNerves_106', ''),
+            ('Sensitivity_107', ''),
+            ('SpinalLesion_108', ''),
+            ('PolyneuriticLesion_109', ''),
+            ('MotorSystem_110', ''),
+            ('CoordinationSystem_111', ''),
+            ('ExtrapyramidalSystem_112', ''),
+            ('AutonomicNervousSystem_113', ''),
+            ('PelvicFunctions_114', ''),
+            ('VertebralSyndrome_115', ''),
+            ('IntracerebralHematoma_116', ''),
+            ('PatientDynamics_117', ''),
+            ('YesNo_118', ''),
+            ('YesNo_119', ''),
+            ('StopFibrillationAtrial_120', ''),
+            ('StopFibrillationAtrialDT_121Date', ''),
+            ('StopFibrillationAtrialDT_121Time', ''),
+            ('MedPost_180_0', ''),
+            ('Recommendations_181', ''),
+            ('SpecialRemarks_182', ''),
+        ]
+
+        response = self._connect.post('https://ecp38.is-mis.ru/', params=params, headers=self._headers, data=data)
+        return [response.status_code, response.json()]
+
+    def create_template(self, med_staff_fact_id):
+        """Создаёт пустой шаблон выписки"""
+
+        params = {
+            'c': 'EvnXml',
+            'm': 'createEmpty',
+        }
+
+        data = {
+            'itemSectionCode': 'EvnXmlEpikriz',
+            'Evn_id': self.evn_section_id,
+            'XmlTemplate_id': '380101000189495',
+            'XmlType_id': '10',
+            'isSelect': 'true',
+            'MedStaffFact_id': med_staff_fact_id,
+            'Server_id': '0',
+        }
+
+        response = self._connect.post('https://ecp38.is-mis.ru/', params=params, headers=self._headers, data=data)
+        return response.json()
+
+    def update_evn_template(self, template_id, chapter: str, text: str):
+        """Заполняет поле рекомендации в выписке"""
+
+        params = {
+            'c': 'EvnXml',
+            'm': 'updateContent',
+        }
+
+        data = {
+            'EvnXml_id': f'{template_id}',
+            'name': chapter,
+            'value': text,
+            'isHTML': '1',
+        }
+
+        response = self._connect.post('https://ecp38.is-mis.ru/', params=params, headers=self._headers, data=data)
+        return response.status_code
+
 
 class PatientECP:
     def __init__(self, connect: Session, name: str, surname: str, patronymic: str, birthday: str):
