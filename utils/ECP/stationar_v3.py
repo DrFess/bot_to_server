@@ -118,7 +118,7 @@ def add_operation(connect: Session):
     for item in current_patients[0]:
         if item.operation:
             if len(item.operation) == 1:
-                if not ecp_fio_dict.get(item.fio)[0]:
+                if not ecp_fio_dict.get(item.fio):
                     oper_date = '.'.join(item.operation.get(0).get('Дата проведения').split('-')[::-1])
 
                     oper_code = item.operation.get(0).get('Код операции').split(' ')[0].rstrip('.').lstrip('A').lstrip('А')
