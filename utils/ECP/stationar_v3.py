@@ -51,6 +51,7 @@ def add_patients_in_ecp(connect: Session) -> None:
     fio_list = [patient_ecp.person_fio for patient_ecp in current_patients[1]]
 
     for item_l2 in current_patients[0]:
+        print(item_l2.fio)
         if item_l2.fio not in list(fio_list):
             name = item_l2.fio.split(' ')[1]
             surname = item_l2.fio.split(' ')[0]
@@ -116,6 +117,7 @@ def add_operation(connect: Session):
                     for patient_ecp in current_patients[1]}
 
     for item in current_patients[0]:
+        print(item.fio)
         if item.operation:
             if len(item.operation) == 1:
                 if not ecp_fio_dict.get(item.fio):
@@ -261,6 +263,7 @@ def discharge_patient(connect: Session):
         diagnosis_info = json.load(file)
 
     for patient in current_discharged_patients_l2:
+        print(patient.fio)
         if patient.finally_examination:
             if patient.fio in list(ecp_fio_dict.keys()):
                 treatment_doctor = patient.finally_examination.get('Лечащий врач')
@@ -330,8 +333,3 @@ def discharge_patient(connect: Session):
 
         else:
             print(f'Проверь выписку {patient.fio}')
-
-
-# session = Session()
-# discharge_patient(session)
-# session.close()
