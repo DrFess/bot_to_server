@@ -1042,22 +1042,38 @@ def entry(connect: Session, login: str, password: str):
     """Запрос авторизации с логином и паролем"""
 
     headers_enter = {
-        'user-agent': FakeUserAgent().random
+        'accept': 'application/json, text/javascript, */*; q=0.01',
+        'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'dnt': '1',
+        'origin': 'https://ecp38.is-mis.ru',
+        'priority': 'u=0, i',
+        'referer': 'https://ecp38.is-mis.ru/?c=promed',
+        'sec-ch-ua': '"Google Chrome";v="137", "Chromium";v="137", "Not/A)Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest',
     }
 
     params = {
         'c': 'main',
         'm': 'index',
         'method': 'Logon',
-        'login': f'{login}',
+        'login': login,
     }
 
     data = {
-        'login': f'{login}',
-        'psw': f'{password}',
+        'login': login,
+        'psw': password,
         'swUserRegion': '',
         'swUserDBType': '',
     }
+
+    connect.get('https://ecp38.is-mis.ru/', headers=headers_enter)
 
     response = connect.post('https://ecp38.is-mis.ru/', params=params, headers=headers_enter, data=data)
 
