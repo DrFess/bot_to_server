@@ -6,8 +6,8 @@ from requests import Session
 
 from settings import login_l2, password_l2, login, password, path_to_hospitalsJson, path_to_doctorsJson, \
     path_to_empoyeesJson, path_to_mkb_code
-from utils.ECP.classes_ECP import CurrentPatientECP, HistoryEcp
-from utils.ECP.single_digital_platform import get_all_patients_stac, entry
+from utils.ECP.classes_ECP import CurrentPatientECP, HistoryEcp, entry
+from utils.ECP.single_digital_platform import get_all_patients_stac
 from utils.L2.classes_L2 import HistoryL2
 from utils.L2.diaries import authorization_l2
 from utils.L2.parse_l2 import get_all_patients_in_ward
