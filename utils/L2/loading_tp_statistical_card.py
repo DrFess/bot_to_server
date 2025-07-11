@@ -10,13 +10,13 @@ from settings import (login_l2, password_l2, proxies, LPU_SECTION_ID_TP, VIZIT_T
                       USLUGA_COMPLEX_ID_TP_SECOND,
                       USLUGA_COMPLEX_ID_TP_FIRST, USLUGA_COMPLEX_ID_LOR, RESULTCLASS_ID_TP, VIZIT_TYPE_ID_DISEASE,
                       path_to_table, path_to_doctorsJson)
-from utils.ECP.single_digital_platform import entry, mkb
+from utils.ECP.classes_ECP import entry
+from utils.ECP.single_digital_platform import mkb
 from utils.L2.data_for_trauma_point import get_ready_data, create_text
 from utils.L2.diaries import authorization_l2
 from utils.L2.read_xlsx import read_xlsx, find_index
 from utils.L2.trauma_point import search_patients_ext6, date_in_milliseconds, get_evn_pl_number, save_first_data_vizit, \
-    save_visit, add_initial_examination_service, create_template, save_text_protocol, finished, get_operation_id, \
-    add_operation_service
+    save_visit, create_template, save_text_protocol, finished, get_operation_id, add_operation_service
 
 
 def upload_statistic_card_from_ECP():
