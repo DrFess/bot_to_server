@@ -34,13 +34,15 @@ async def hospitalize_new():
 async def operation_update():
     session = requests.Session()
     session.proxies.update(proxies)
-    add_operation(session)
+    message = add_operation(session)
     session.close()
+    await bot.send_message(chat_id=admin, text=message)
 
 
 @router.message(Command(commands=['extract']))
 async def extract_patients():
     session = requests.Session()
     session.proxies.update(proxies)
-    discharge_patient(session)
+    message = discharge_patient(session)
     session.close()
+    await bot.send_message(chat_id=admin, text=message)

@@ -100,16 +100,16 @@ def add_patients_in_ecp(connect: Session) -> str:
                         med_staff_fact_id='380101000010385'
                     )
                     print(f'{item_l2.fio} добавлен в ЕЦП')
-                    report += f'{item_l2.fio} добавлен в ЕЦП'
+                    report += f'{item_l2.fio} добавлен в ЕЦП\n'
                 else:
                     print(f'{item_l2.fio} ошибка на этапе госпитализации - экстренная или плановая')
-                    report += f'{item_l2.fio} ошибка на этапе госпитализации - экстренная или плановая'
+                    report += f'{item_l2.fio} ошибка на этапе госпитализации - экстренная или плановая\n'
             else:
                 print(f'{item_l2.fio} не могу найти такого в ЕЦП')
-                report += f'{item_l2.fio} не могу найти такого в ЕЦП'
+                report += f'{item_l2.fio} не могу найти такого в ЕЦП\n'
         else:
             print(f'{item_l2.fio} уже в ЕЦП')
-            report += f'{item_l2.fio} уже в ЕЦП'
+            report += f'{item_l2.fio} уже в ЕЦП\n'
     return report
 
 
@@ -120,7 +120,7 @@ def add_operation(connect: Session):
 
     ecp_fio_dict = {patient_ecp.person_fio: (patient_ecp.ksg, patient_ecp)
                     for patient_ecp in current_patients[1]}
-
+    report = ''
     for item in current_patients[0]:
         print(item.fio)
         if item.operation:
@@ -232,8 +232,11 @@ def add_operation(connect: Session):
                                     implant_name=implant_title
                                 )
                         print(f'Done! Operation to {item.fio} added')
+                        report = f'{item.fio} операция добавлена\n'
                     except Exception as error:
                         print(f'Ошибка при добавлении операции - {error}. Пациент {item.fio}')
+                        report = f'Ошибка при добавлении операции - {error}. Пациент {item.fio}\n'
+    return report
 
 
 def discharge_patient(connect: Session):
@@ -269,6 +272,7 @@ def discharge_patient(connect: Session):
     with open(path_to_mkb_code, 'r') as file:
         diagnosis_info = json.load(file)
 
+    report = ''
     for patient in current_discharged_patients_l2:
         print(patient.fio)
         if patient.finally_examination:
@@ -338,6 +342,10 @@ def discharge_patient(connect: Session):
                          f'{patient.finally_examination.get("Уход за послеоперационной раной", "")}'
                 )
                 print(f'Пациента {patient.fio} выписан')
+                report = f'Пациента {patient.fio} выписан\n'
 
         else:
             print(f'Проверь выписку {patient.fio}')
+            report = f'{patient.fio} ОШИБКА ВЫПИСКИ\n'
+    return report
+
