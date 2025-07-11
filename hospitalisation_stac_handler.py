@@ -25,8 +25,9 @@ async def hospitalize():
 async def hospitalize_new():
     session = requests.Session()  # создание сессии подключения
     session.proxies.update(proxies)
-    add_patients_in_ecp(session)
+    message = add_patients_in_ecp(session)
     session.close()
+    await bot.send_message(chat_id=admin, text=message)
 
 
 @router.message(Command(commands=['operation_update']))

@@ -44,12 +44,12 @@ def get_current_patients_l2_ecp(connect: Session) -> tuple:
     return current_patients_l2, current_patients_ecp
 
 
-def add_patients_in_ecp(connect: Session) -> None:
+def add_patients_in_ecp(connect: Session) -> str:
     """Создаёт случай госпитализации, если пациента нет в госпитализированных"""
     current_patients = get_current_patients_l2_ecp(connect)
 
     fio_list = [patient_ecp.person_fio for patient_ecp in current_patients[1]]
-
+    report = ''
     for item_l2 in current_patients[0]:
         print(item_l2.fio)
         if item_l2.fio not in list(fio_list):
@@ -100,12 +100,17 @@ def add_patients_in_ecp(connect: Session) -> None:
                         med_staff_fact_id='380101000010385'
                     )
                     print(f'{item_l2.fio} добавлен в ЕЦП')
+                    report += f'{item_l2.fio} добавлен в ЕЦП'
                 else:
                     print(f'{item_l2.fio} ошибка на этапе госпитализации - экстренная или плановая')
+                    report += f'{item_l2.fio} ошибка на этапе госпитализации - экстренная или плановая'
             else:
                 print(f'{item_l2.fio} не могу найти такого в ЕЦП')
+                report += f'{item_l2.fio} не могу найти такого в ЕЦП'
         else:
             print(f'{item_l2.fio} уже в ЕЦП')
+            report += f'{item_l2.fio} уже в ЕЦП'
+    return report
 
 
 def add_operation(connect: Session):
