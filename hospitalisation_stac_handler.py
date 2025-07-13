@@ -27,7 +27,10 @@ async def hospitalize_new():
     session.proxies.update(proxies)
     message = add_patients_in_ecp(session)
     session.close()
-    await bot.send_message(chat_id=admin, text=message)
+    if message:
+        await bot.send_message(chat_id=admin, text=message)
+    else:
+        await bot.send_message(chat_id=admin, text='Все пациенты добавлены')
 
 
 @router.message(Command(commands=['operation_update']))
@@ -36,7 +39,10 @@ async def operation_update():
     session.proxies.update(proxies)
     message = add_operation(session)
     session.close()
-    await bot.send_message(chat_id=admin, text=message)
+    if message:
+        await bot.send_message(chat_id=admin, text=message)
+    else:
+        await bot.send_message(chat_id=admin, text='Все операции добавлены')
 
 
 @router.message(Command(commands=['extract']))
@@ -45,4 +51,7 @@ async def extract_patients():
     session.proxies.update(proxies)
     message = discharge_patient(session)
     session.close()
-    await bot.send_message(chat_id=admin, text=message)
+    if message:
+        await bot.send_message(chat_id=admin, text=message)
+    else:
+        await bot.send_message(chat_id=admin, text='Выписанных пациентов нет')
