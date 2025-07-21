@@ -232,10 +232,10 @@ def add_operation(connect: Session):
                                     implant_name=implant_title
                                 )
                         print(f'Done! Operation to {item.fio} added')
-                        report = f'{item.fio} операция добавлена\n'
+                        report += f'{item.fio} операция добавлена\n'
                     except Exception as error:
                         print(f'Ошибка при добавлении операции - {error}. Пациент {item.fio}')
-                        report = f'Ошибка при добавлении операции - {error}. Пациент {item.fio}\n'
+                        report += f'Ошибка при добавлении операции - {error}. Пациент {item.fio}\n'
     return report
 
 

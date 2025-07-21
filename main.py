@@ -21,14 +21,14 @@ bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode='HTML'), session=
 
 
 async def scheduler():
-    aioschedule.every().day.at('23:45').do(schedule_handler.start_scheduler)
+    aioschedule.every().day.at('23:45').do(schedule_handler.start_scheduler)  # 07:45
     # aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.hospitalize)
-    aioschedule.every().day.at('21:00').do(hospitalisation_stac_handler.hospitalize_new)
-    aioschedule.every().day.at('08:00').do(hospitalisation_stac_handler.hospitalize_new)
-    aioschedule.every().day.at('09:30').do(hospitalisation_stac_handler.operation_update)
-    aioschedule.every().day.at('21:30').do(hospitalisation_stac_handler.operation_update)
-    aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.extract_patients)
-    aioschedule.every().day.at('22:00').do(hospitalisation_stac_handler.extract_patients)
+    aioschedule.every().day.at('21:00').do(hospitalisation_stac_handler.hospitalize_new)  # 05:00
+    aioschedule.every().day.at('08:00').do(hospitalisation_stac_handler.hospitalize_new)  # 16:00
+    aioschedule.every().day.at('10:00').do(hospitalisation_stac_handler.operation_update)  # 18:00
+    # aioschedule.every().day.at('22:30').do(hospitalisation_stac_handler.operation_update)  # 06:30
+    aioschedule.every().day.at('12:00').do(hospitalisation_stac_handler.extract_patients)  # 20:00
+    # aioschedule.every().day.at('23:00').do(hospitalisation_stac_handler.extract_patients)  # 07:00
 
     while True:
         await aioschedule.run_pending()
