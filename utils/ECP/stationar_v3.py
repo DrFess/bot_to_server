@@ -342,10 +342,10 @@ def discharge_patient(connect: Session):
                          f'{patient.finally_examination.get("Уход за послеоперационной раной", "")}'
                 )
                 print(f'Пациента {patient.fio} выписан')
-                report = f'Пациента {patient.fio} выписан\n'
+                report += f'Пациента {patient.fio} выписан\n'
 
         else:
             print(f'Проверь выписку {patient.fio}')
-            report = f'{patient.fio} ОШИБКА ВЫПИСКИ\n'
+            report += f'{patient.fio} ОШИБКА ВЫПИСКИ\n'
     return report
 
