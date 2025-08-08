@@ -87,7 +87,10 @@ def add_patients_in_ecp(connect: Session) -> str:
                     referring_hospital = item_l2.first_examination.get('Кем направлен больной')
                     with open(path_to_hospitalsJson, 'r') as file:
                         hospitals = json.load(file)
-                        referring_hospital_id = hospitals.get(referring_hospital).get('Org_id')
+                        try:
+                            referring_hospital_id = hospitals.get(referring_hospital).get('Org_id')
+                        except AttributeError:
+                            referring_hospital_id = ''
                     hospitalized_patient.create_evn(
                         date_start=date_start_normal,
                         time_start=item_l2.first_examination.get('Время поступления'),
@@ -341,8 +344,8 @@ def discharge_patient(connect: Session):
                          f'{patient.finally_examination.get("Реабилитация", "")}\n'
                          f'{patient.finally_examination.get("Уход за послеоперационной раной", "")}'
                 )
-                print(f'Пациента {patient.fio} выписан')
-                report += f'Пациента {patient.fio} выписан\n'
+                print(f'Пациент {patient.fio} выписан')
+                report += f'Пациент {patient.fio} выписан\n'
 
         else:
             print(f'Проверь выписку {patient.fio}')
